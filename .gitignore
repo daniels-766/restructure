@@ -1,4 +1,5 @@
 static/uploads/
+static/assets/
 migrations/
 __pycache__/
 *.pyc
