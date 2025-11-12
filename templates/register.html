@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head><title>Register</title></head>
+<body>
+    <h2>Register (Admin/Staff)</h2>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div style="color: {% if category == 'danger' %}red{% elif category == 'success' %}green{% else %}black{% endif %};">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <form method="POST">
+        <p>Nama: <input type="text" name="name" required></p>
+        <p>Phone: <input type="text" name="phone" required></p>
+        <p>Email: <input type="email" name="email" required></p>
+        <p>Password: <input type="password" name="password" required></p>
+        <p>Role:
+            <select name="role" required>
+                <option value="Admin">Admin</option>
+                <option value="Staff">Staff</option>
+            </select>
+        </p>
+        <button type="submit">Daftar</button>
+    </form>
+    <p>Sudah punya akun? <a href="{{ url_for('login') }}">Login</a></p>
+</body>
+</html>

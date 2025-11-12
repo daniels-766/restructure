@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Login | Dashboard Restructure UATAS</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta content="A fully featured admin theme which can be used to build CRM, CMS, etc." name="description">
+    <meta content="Themesdesign" name="author">
+
+    <link rel="shortcut icon" href="../static/assets/favicon-CK1QI2Xs.ico">
+
+    <script>
+        (function () {
+            const html = document.documentElement;
+            const storageKey = "__TAILWICK_CONFIG__";
+            const savedConfig = sessionStorage.getItem(storageKey);
+
+            const defaultConfig = {
+                dir: "ltr",
+                theme: "light",
+                sidenav: {
+                    color: "light",
+                    size: "default",
+                },
+            };
+
+            function getSystemTheme() {
+                return window.matchMedia('(prefers-color-scheme: dark)').matches ? "dark" : "light";
+            }
+
+            const htmlConfig = {
+                dir: html.getAttribute("dir") || defaultConfig.dir,
+
+                theme: html.getAttribute("data-theme") === 'system'
+                    ? getSystemTheme()
+                    : html.getAttribute("data-theme") || (defaultConfig.theme === 'system' ? getSystemTheme() : defaultConfig.theme),
+                sidenav: {
+                    color: html.getAttribute("data-sidenav-color") || defaultConfig.sidenav.color,
+                    size: html.getAttribute("data-sidenav-size") || defaultConfig.sidenav.size,
+                },
+            };
+
+            window.defaultConfig = structuredClone(htmlConfig);
+
+            let config = savedConfig ? JSON.parse(savedConfig) : htmlConfig;
+            window.config = config;
+
+            html.setAttribute("dir", config.dir);
+            html.setAttribute("data-theme", config.theme);
+            html.setAttribute("data-sidenav-color", config.sidenav.color);
+
+            if (config.sidenav.size) {
+                let size = config.sidenav.size;
+
+                if (window.innerWidth <= 1140) {
+                    size = "offcanvas";
+                }
+
+                html.setAttribute("data-sidenav-size", size);
+            }
+        })();
+    </script>
+    <script type="module" crossorigin src="../static/assets/app-DOPhicSe.js"></script>
+    <link rel="stylesheet" crossorigin href="../static/assets/app-1Gqs6GNA.css">
+</head>
+
+<body>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div id="flash-messages"
+        style="position: fixed; top: 1rem; left: 0; right: 0; display: flex; justify-content: center; z-index: 9999; pointer-events: none;">
+        <div
+            style="display: flex; flex-direction: column; gap: 0.5rem; max-width: 400px; width: 100%; padding: 0 1rem;">
+            {% for category, message in messages %}
+            <div style="
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            color: white;
+            font-weight: 500;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+            pointer-events: auto;
+            opacity: 0;
+            transform: translateY(-10px);
+            animation: fadeIn 0.3s forwards;
+            {% if category == 'success' %}background-color: #10b981;
+            {% elif category == 'danger' %}background-color: #ef4444;
+            {% elif category == 'warning' %}background-color: #f59e0b;
+            {% elif category == 'info' %}background-color: #3b82f6;
+            {% else %}background-color: #6b7280;
+            {% endif %}">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <style>
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const el = document.getElementById('flash-messages');
+            if (el) {
+                setTimeout(() => {
+                    el.style.transition = 'opacity 0.5s';
+                    el.style.opacity = '0';
+                    setTimeout(() => el.remove(), 500);
+                }, 2000);
+            }
+        });
+    </script>
+    {% endif %}
+    {% endwith %}
+
+    <div class="bg-cover bg-no-repeat min-h-screen flex justify-center items-center"
+        style="background-image: url('/static/assets/auth-bg-Dbv9BhkR.jpg')">
+        <div class="relative">
+            <div class="bg-card/70 rounded-lg w-2/3 mx-auto">
+                <div class="grid lg:grid-cols-12 grid-cols-1 items-center gap-0">
+                    <div class="lg:col-span-5">
+                        <div class="text-center px-10 py-12">
+                            <div class="text-center">
+                                <h4 class="mb-3 text-xl font-semibold text-purple-500">Welcome Back !</h4>
+                                <p class="text-base text-default-500">Sign in to continue to
+                                    Dashboard Restructure.
+                                </p>
+                            </div>
+
+                            <form method="post" class="text-left w-full mt-10">
+                                <div class="mb-4">
+                                    <label for="Username"
+                                        class="block  font-medium text-default-900 text-sm mb-2">Username/ Email
+                                        ID</label>
+                                    <input type="email" name="email" id="Username" class="form-input"
+                                        placeholder="Enter Username or email" required />
+                                </div>
+
+                                <div class="mb-4">
+                                    <label for="Password"
+                                        class="block  font-medium text-default-900 text-sm mb-2">Password</label>
+                                    <input type="password" name="password" id="Password" class="form-input"
+                                        placeholder="Enter Password" required />
+                                </div>
+
+                                <div class="flex items-center gap-2">
+                                    <input id="checkbox-1" type="checkbox" class="form-checkbox">
+                                    <label class="text-default-900 text-sm font-medium" for="checkbox-1">Remember
+                                        Me</label>
+                                </div>
+
+                                <div class="mt-10 text-center">
+                                    <button type="submit" class="btn bg-primary text-white w-full">Sign In</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div
+                        class="lg:col-span-7 bg-card/60 mx-2 my-2 shadow-[0_14px_15px_-3px_#f1f5f9,0_4px_6px_-4px_#f1f5f9] dark:shadow-none rounded-lg ">
+                        <div class="pt-10 px-10 h-full">
+                            <div class="flex items-center justify-between gap-3">
+                                <div>
+                                    <a href="index.html">
+                                        <img src="../static/assets/arc/logos1.png" alt="logo dark"
+                                            class="h-8 block dark:hidden">
+                                        <img src="../static/assets/arc/logos1.png" alt="logo light"
+                                            class="h-8 hidden dark:block" alt="">
+                                    </a>
+                                </div>
+                            </div>
+
+                            <div class="mt-auto">
+                                <img src="../static/assets/boxed-LnU6Ti5x.png" alt="">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>

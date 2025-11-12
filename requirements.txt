@@ -1,0 +1,10 @@
+flask 
+flask-sqlalchemy 
+flask-login 
+pymysql
+pytz
+APScheduler
+flask_apscheduler
+APScheduler
+pandas 
+openpyxl

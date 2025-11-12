@@ -1,0 +1,122 @@
+<div class="relative min-h-0 flex-grow">
+    <div class="size-full" data-simplebar>
+        <ul class="side-nav p-3 hs-accordion-group">
+            <li class="menu-title">
+                <span>Overview</span>
+            </li>
+
+            <li class="menu-item">
+                <a href="{{ url_for('dashboard') }}" class="hs-accordion-toggle menu-link">
+                    <span class="menu-icon"><i data-lucide="monitor-dot"></i></span>
+                    <span class="menu-text"> Dashboards </span>
+                </a>
+            </li>
+
+            
+            {% if user.role == 'Admin' %}
+            <li class="menu-item hs-accordion">
+                <a class="hs-accordion-toggle menu-link">
+                    <span class="menu-icon"><i data-lucide="settings"></i></span>
+                    <span class="menu-text"> Setting </span>
+                    <span class="menu-arrow"></span>
+                </a>
+
+
+                <ul class="sub-menu hs-accordion-content hidden">
+                    <li class="menu-item">
+                        <a href="{{ url_for('product_management') }}" class="menu-link">
+                            <span class="menu-text"> Product Setting </span>
+                        </a>
+                    </li>
+
+                    <li class="menu-item">
+                        <a href="{{ url_for('document_management') }}" class="menu-link">
+                            <span class="menu-text"> Document Setting </span>
+                        </a>
+                    </li>
+
+                    <!-- <li class="menu-item">
+                        <a href="product-landing.html" target="_blank" class="menu-link">
+                            <span class="menu-text"> Account Setting </span>
+                        </a>
+                    </li> -->
+                </ul>
+            </li>
+            {% endif %}
+
+            <li class="menu-title">
+                <span>Apps</span>
+            </li>
+
+            {% if user.role == 'Admin' %}
+            <li class="menu-item">
+                <a class="menu-link" href="{{ url_for('list_users') }}">
+                    <span class="menu-icon"><i data-lucide="square-user-round"></i></span>
+                    <div class="menu-text">Users</div>
+                </a>
+            </li>
+            {% endif %}
+
+            <li class="menu-item hs-accordion">
+                <a href="javascript:void(0)" class="hs-accordion-toggle menu-link">
+                    <span class="menu-icon"><i data-lucide="file-text"></i></span>
+                    <span class="menu-text"> Case </span>
+                    <span class="menu-arrow"></span>
+                </a>
+
+                <ul class="sub-menu hs-accordion-content hidden">
+                    <li class="menu-item">
+                        <a href="{{ url_for('case_open') }}" class="menu-link">
+                            <span class="menu-text">Open</span>
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="{{ url_for('case_process') }}" class="menu-link">
+                            <span class="menu-text">In Process</span>
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="{{ url_for('case_close') }}" class="menu-link">
+                            <span class="menu-text">Close</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+
+            <li class="menu-item hs-accordion">
+                <a href="javascript:void(0)" class="hs-accordion-toggle menu-link">
+                    <span class="menu-icon"><i data-lucide="circle-dollar-sign"></i></span>
+                    <span class="menu-text"> Collection </span>
+                    <span class="menu-arrow"></span>
+                </a>
+
+                <ul class="sub-menu hs-accordion-content hidden">
+                    <li class="menu-item">
+                        <a href="{{ url_for('case_collection') }}" class="menu-link">
+                            <span class="menu-text">Open</span>
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="{{ url_for('case_collection_close') }}" class="menu-link">
+                            <span class="menu-text">Done</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+
+            <!-- <li class="menu-item">
+                <a class="menu-link" href="{{ url_for('chat') }}">
+                    <span class="menu-icon"><i data-lucide="messages-square"></i></span>
+                    <div class="menu-text">Chat</div>
+                </a>
+            </li> -->
+
+            <li class="menu-item">
+                <a class="menu-link" href="{{ url_for('calendar_view') }}">
+                    <span class="menu-icon"><i data-lucide="calendar-1"></i></span>
+                    <div class="menu-text">Calendar SLA</div>
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>

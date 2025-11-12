@@ -1,0 +1,1 @@
+import"./app-DOPhicSe.js";document.addEventListener("DOMContentLoaded",function(){const e=document.getElementById("checkAll"),c=document.querySelectorAll(".mail-list .form-checkbox");e.addEventListener("change",function(){c.forEach(t=>{t.checked=e.checked})})});

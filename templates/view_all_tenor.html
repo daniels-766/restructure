@@ -1,0 +1,321 @@
+<!doctype html>
+<html lang="id">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Tabel Tenor Kontrak</title>
+    <style>
+        :root {
+            --ink: #000;
+            --paper: #fff;
+            --header: #f4b183;
+            --subhead: #f4b183;
+            --total-bg: #f7c89d;
+            --row-bg: #ffffff;
+            --row-alt: #faf7f2;
+            --radius: 10px;
+            --bw: .7px;
+        }
+
+        body {
+            background: #f3f3f3;
+            font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
+                "Noto Sans", "Liberation Sans", Arial, sans-serif;
+            padding: 24px;
+        }
+
+        .wrap {
+            max-width: 1240px;
+            margin: auto;
+        }
+
+        .card {
+            background: var(--paper);
+            border: var(--bw) solid var(--ink);
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, .06);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            color: #202020;
+            table-layout: fixed;
+        }
+
+        th,
+        td {
+            border-right: var(--bw) solid var(--ink);
+            border-bottom: var(--bw) solid var(--ink);
+            padding: 12px 10px;
+            vertical-align: middle;
+            word-wrap: break-word;
+        }
+
+        tr>*:first-child {
+            border-left: var(--bw) solid var(--ink);
+        }
+
+        thead tr:first-child>* {
+            border-top: var(--bw) solid var(--ink);
+        }
+
+        .tier {
+            background: var(--header);
+            text-align: center;
+            font-weight: 700;
+            font-size: 15px;
+        }
+
+        .sub {
+            background: var(--subhead);
+            text-align: center;
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .side-head {
+            background: var(--header);
+            font-weight: 700;
+            text-align: center;
+            width: 180px;
+        }
+
+        .total-head {
+            background: var(--header);
+            font-weight: 700;
+            text-align: center;
+            width: 210px;
+        }
+
+        .total-col {
+            background: var(--total-bg);
+            font-weight: 700;
+            text-align: center;
+        }
+
+        tbody tr:nth-child(odd) td {
+            background: var(--row-bg);
+        }
+
+        tbody tr:nth-child(even) td {
+            background: var(--row-alt);
+        }
+
+        .divider td {
+            background: #fff;
+            padding: 0;
+            border-bottom: var(--bw) solid var(--ink);
+            height: 14px;
+        }
+
+        .money {
+            text-align: center;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .date {
+            text-align: center;
+            font-variant-numeric: tabular-nums;
+        }
+
+        @media (max-width: 980px) {
+
+            th,
+            td {
+                padding: 10px 8px;
+                font-size: 13px;
+            }
+
+            .side-head,
+            .total-head {
+                width: auto;
+            }
+        }
+    </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="card">
+      <table aria-label="Tabel tenor kontrak">
+        <colgroup>
+          <col style="width: 18%;">
+          <col style="width: 13%">
+          <col style="width: 12%">
+          <col style="width: 13%">
+          <col style="width: 12%">
+          <col style="width: 13%">
+          <col style="width: 12%">
+          <col style="width: 17%">
+        </colgroup>
+
+        {% if max_tenor_aktif >= 1 %}
+        <thead>
+          <tr>
+            <th class="side-head" rowspan="2">Nomor Kontrak</th>
+            <th class="tier" colspan="2">Cicilan ke 1</th>
+            {% if max_tenor_aktif >= 2 %}
+            <th class="tier" colspan="2">Cicilan ke 2</th>
+            {% endif %}
+            {% if max_tenor_aktif >= 3 %}
+            <th class="tier" colspan="2">Cicilan ke 3</th>
+            {% endif %}
+            <th class="total-head" rowspan="2">Total nominal<br />pengembalian</th>
+          </tr>
+          <tr>
+            <th class="sub">Tanggal Jatuh Tempo</th><th class="sub">Nominal</th>
+            {% if max_tenor_aktif >= 2 %}
+            <th class="sub">Tanggal Jatuh Tempo</th><th class="sub">Nominal</th>
+            {% endif %}
+            {% if max_tenor_aktif >= 3 %}
+            <th class="sub">Tanggal Jatuh Tempo</th><th class="sub">Nominal</th>
+            {% endif %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in rows %}
+          <tr>
+            <td>{{ r.nomor_kontrak }}</td>
+            <td class="date">{{ r.c[0]['tgl'] }}</td><td class="money">{{ r.c[0]['nom'] }}</td>
+            {% if max_tenor_aktif >= 2 %}
+            <td class="date">{{ r.c[1]['tgl'] }}</td><td class="money">{{ r.c[1]['nom'] }}</td>
+            {% endif %}
+            {% if max_tenor_aktif >= 3 %}
+            <td class="date">{{ r.c[2]['tgl'] }}</td><td class="money">{{ r.c[2]['nom'] }}</td>
+            {% endif %}
+            <td class="total-col">{{ r.total_nominal_akhir or '-' }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+        {% endif %}
+
+        {% if max_tenor_aktif >= 4 %}
+        <thead>
+          <tr>
+            <th class="side-head" rowspan="2">Nomor Kontrak</th>
+            <th class="tier" colspan="2">Cicilan ke 4</th>
+            {% if max_tenor_aktif >= 5 %}
+            <th class="tier" colspan="2">Cicilan ke 5</th>
+            {% endif %}
+            {% if max_tenor_aktif >= 6 %}
+            <th class="tier" colspan="2">Cicilan ke 6</th>
+            {% endif %}
+            <th class="total-head" rowspan="2">Total nominal<br />pengembalian</th>
+          </tr>
+          <tr>
+            <th class="sub">Tanggal Jatuh Tempo</th><th class="sub">Nominal</th>
+            {% if max_tenor_aktif >= 5 %}
+            <th class="sub">Tanggal Jatuh Tempo</th><th class="sub">Nominal</th>
+            {% endif %}
+            {% if max_tenor_aktif >= 6 %}
+            <th class="sub">Tanggal Jatuh Tempo</th><th class="sub">Nominal</th>
+            {% endif %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in rows %}
+          <tr>
+            <td>{{ r.nomor_kontrak }}</td>
+            <td class="date">{{ r.c[3]['tgl'] }}</td><td class="money">{{ r.c[3]['nom'] }}</td>
+            {% if max_tenor_aktif >= 5 %}
+            <td class="date">{{ r.c[4]['tgl'] }}</td><td class="money">{{ r.c[4]['nom'] }}</td>
+            {% endif %}
+            {% if max_tenor_aktif >= 6 %}
+            <td class="date">{{ r.c[5]['tgl'] }}</td><td class="money">{{ r.c[5]['nom'] }}</td>
+            {% endif %}
+            <td class="total-col">{{ r.total_nominal_akhir or '-' }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+        {% endif %}
+
+        {% if max_tenor_aktif >= 7 %}
+        <thead>
+          <tr>
+            <th class="side-head" rowspan="2">Nomor Kontrak</th>
+            <th class="tier" colspan="2">Cicilan ke 7</th>
+            {% if max_tenor_aktif >= 8 %}
+            <th class="tier" colspan="2">Cicilan ke 8</th>
+            {% endif %}
+            {% if max_tenor_aktif >= 9 %}
+            <th class="tier" colspan="2">Cicilan ke 9</th>
+            {% endif %}
+            <th class="total-head" rowspan="2">Total nominal<br />pengembalian</th>
+          </tr>
+          <tr>
+            <th class="sub">Tanggal Jatuh Tempo</th><th class="sub">Nominal</th>
+            {% if max_tenor_aktif >= 8 %}
+            <th class="sub">Tanggal Jatuh Tempo</th><th class="sub">Nominal</th>
+            {% endif %}
+            {% if max_tenor_aktif >= 9 %}
+            <th class="sub">Tanggal Jatuh Tempo</th><th class="sub">Nominal</th>
+            {% endif %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in rows %}
+          <tr>
+            <td>{{ r.nomor_kontrak }}</td>
+            <td class="date">{{ r.c[6]['tgl'] }}</td><td class="money">{{ r.c[6]['nom'] }}</td>
+            {% if max_tenor_aktif >= 8 %}
+            <td class="date">{{ r.c[7]['tgl'] }}</td><td class="money">{{ r.c[7]['nom'] }}</td>
+            {% endif %}
+            {% if max_tenor_aktif >= 9 %}
+            <td class="date">{{ r.c[8]['tgl'] }}</td><td class="money">{{ r.c[8]['nom'] }}</td>
+            {% endif %}
+            <td class="total-col">{{ r.total_nominal_akhir or '-' }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+        {% endif %}
+
+        {% if max_tenor_aktif >= 10 %}
+        <thead>
+          <tr>
+            <th class="side-head" rowspan="2">Nomor Kontrak</th>
+            <th class="tier" colspan="2">Cicilan ke 10</th>
+            {% if max_tenor_aktif >= 11 %}
+            <th class="tier" colspan="2">Cicilan ke 11</th>
+            {% endif %}
+            {% if max_tenor_aktif >= 12 %}
+            <th class="tier" colspan="2">Cicilan ke 12</th>
+            {% endif %}
+            <th class="total-head" rowspan="2">Total nominal<br />pengembalian</th>
+          </tr>
+          <tr>
+            <th class="sub">Tanggal Jatuh Tempo</th><th class="sub">Nominal</th>
+            {% if max_tenor_aktif >= 11 %}
+            <th class="sub">Tanggal Jatuh Tempo</th><th class="sub">Nominal</th>
+            {% endif %}
+            {% if max_tenor_aktif >= 12 %}
+            <th class="sub">Tanggal Jatuh Tempo</th><th class="sub">Nominal</th>
+            {% endif %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in rows %}
+          <tr>
+            <td>{{ r.nomor_kontrak }}</td>
+            <td class="date">{{ r.c[9]['tgl'] }}</td><td class="money">{{ r.c[9]['nom'] }}</td>
+            {% if max_tenor_aktif >= 11 %}
+            <td class="date">{{ r.c[10]['tgl'] }}</td><td class="money">{{ r.c[10]['nom'] }}</td>
+            {% endif %}
+            {% if max_tenor_aktif >= 12 %}
+            <td class="date">{{ r.c[11]['tgl'] }}</td><td class="money">{{ r.c[11]['nom'] }}</td>
+            {% endif %}
+            <td class="total-col">{{ r.total_nominal_akhir or '-' }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+        {% endif %}
+      </table>
+    </div>
+  </div>
+</body>
+
+
+</html>

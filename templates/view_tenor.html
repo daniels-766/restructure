@@ -1,0 +1,204 @@
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">View Tenor</h5>
+                </div>
+                <div class="card-body">
+
+                    {% if tenor_data %}
+                    <div class="table-responsive">
+                        <style>
+                            .tenor-wrap {
+                                background: #fff;
+                                padding: 20px;
+                                border-radius: 8px;
+                                box-shadow: 0 2px 10px rgba(0, 0, 0, .1);
+                                overflow-x: auto;
+                            }
+
+                            .tenor-table {
+                                width: 100%;
+                                border-collapse: collapse;
+                                table-layout: fixed;
+                                min-width: 1100px;
+                            }
+
+                            .tenor-table col.side {
+                                width: 90px;
+                            }
+
+                            .tenor-table col.total {
+                                width: 130px;
+                            }
+
+                            .tenor-table td {
+                                border: 2px solid #8B4513;
+                                padding: 8px;
+                                text-align: center;
+                                vertical-align: middle;
+                                font-size: 12px;
+                            }
+
+                            .vside,
+                            .vtotal {
+                                background: #DEB887;
+                                font-weight: 700;
+                                writing-mode: vertical-lr;
+                                text-orientation: mixed;
+                                padding: 10px 6px;
+                                text-align: center;
+                            }
+
+                            .block-head {
+                                background: #DEB887;
+                                font-weight: 700;
+                                padding: 10px 6px;
+                            }
+
+                            .sub-head {
+                                background: #DEB887;
+                                font-weight: 700;
+                                font-size: 11px;
+                                padding: 6px;
+                            }
+
+                            .date {
+                                background: #fff;
+                                font-size: 11px;
+                            }
+
+                            .amount {
+                                background: #fff;
+                                font-size: 11px;
+                                text-align: right;
+                                padding-right: 12px;
+                            }
+
+                            @media (max-width: 768px) {
+                                .tenor-table td {
+                                    padding: 6px;
+                                    font-size: 11px;
+                                }
+                            }
+
+                            @media (max-width: 480px) {
+                                .tenor-table td {
+                                    padding: 4px;
+                                    font-size: 10px;
+                                }
+                            }
+                        </style>
+
+                        <div class="tenor-wrap">
+                            <table class="tenor-table">
+                                <colgroup>
+                                    <col class="side">
+                                    <col>
+                                    <col>
+                                    <col>
+                                    <col>
+                                    <col>
+                                    <col>
+                                    <col class="total">
+                                </colgroup>
+
+                                {% for row in tenor_data %}
+                                {% set raw = row.cicilan or [] %}
+
+                                {# 1) Hitung tenor yang benar-benar ada (bukan padding) #}
+                                {% set valid_items = (raw
+                                |selectattr('tanggal_jatuh_tempo','defined')
+                                |selectattr('nominal','defined')
+                                |list) %}
+                                {% set n = valid_items|length %}
+
+                                {# 2) Jika semua kosong, jangan render blok apa pun #}
+                                {% if n == 0 %}
+                                <tr>
+                                    <td class="vside">Nomor Kontrak<br><br><strong>{{ row.nomor_kontrak }}</strong></td>
+                                    <td colspan="6">Tidak ada tenor</td>
+                                    <td class="vtotal">
+                                        Total nominal pengembalian<br><br>
+                                        <strong>Rp{{ row.total_nominal_akhir or '-' }}</strong>
+                                    </td>
+                                </tr>
+                                {% else %}
+
+                                {# 3) Tampilkan hanya sampai kelipatan 3 yang menutupi n (ceil) #}
+                                {% set total_groups = ((n + 2) // 3) %}
+                                {% set needed = total_groups * 3 %}
+
+                                {# 4) Ambil hanya n item asli, lalu pad ke needed dengan None #}
+                                {% set trimmed = raw[:n] %}
+                                {% set padded = (trimmed + [None]*(needed - n)) %}
+
+                                {# 5) Bagi per 3 & pastikan list (bukan generator) #}
+                                {% set groups = (padded|batch(3, None)|list) %}
+
+                                {# 6) Rowspan kiri/kanan = 3 baris per grup yang dirender #}
+                                {% set total_rows = total_groups * 3 %}
+
+                                {# ================== RENDER ================== #}
+                                {% for g in groups %}
+                                {% set start = (loop.index0 * 3) + 1 %}
+
+                                <tr>
+                                    {% if loop.first %}
+                                    <td class="vside" rowspan="{{ total_rows }}">
+                                        Nomor Kontrak<br><br><strong>{{ row.nomor_kontrak }}</strong>
+                                    </td>
+                                    {% endif %}
+
+                                    {% for i in range(3) %}
+                                    <td class="block-head" colspan="2">Cicilan ke {{ start + i }}</td>
+                                    {% endfor %}
+
+                                    {% if loop.first %}
+                                    <td class="vtotal" rowspan="{{ total_rows }}">
+                                        Total nominal pengembalian<br><br>
+                                        <strong>
+                                            Rp{{ row.total_nominal_akhir or '-' }}
+                                        </strong>
+                                    </td>
+                                    {% endif %}
+                                </tr>
+
+                                <tr>
+                                    {% for _ in range(3) %}
+                                    <td class="sub-head">Tanggal Jatuh Tempo</td>
+                                    <td class="sub-head">Nominal</td>
+                                    {% endfor %}
+                                </tr>
+
+                                <tr>
+                                    {% for i in range(3) %}
+                                    {% set item = g[i] %}
+                                    {% if item and item.tanggal_jatuh_tempo is defined and item.nominal is defined %}
+                                    <td class="date">{{ item.tanggal_jatuh_tempo }}</td>
+                                    <td class="amount">Rp{{
+                                        ('{:,.0f}'.format((item.nominal|default(0))|float)).replace(',', '.') }}</td>
+                                    {% else %}
+                                    <td class="date">-</td>
+                                    <td class="amount">-</td>
+                                    {% endif %}
+                                    {% endfor %}
+                                </tr>
+                                {% endfor %}
+                                {% endif %}
+                                {% endfor %}
+                            </table>
+                        </div>
+                    </div>
+
+
+                    {% else %}
+                    <p>Belum ada data tenor.</p>
+                    {% endif %}
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
