@@ -2134,6 +2134,6 @@ if __name__ == '__main__':
     print("Scheduler untuk pengurangan SLA telah dimulai...")
 
     try:
-        app.run(debug=True, port=5000, host='0.0.0.0')
+        app.run(debug=True, port=5006, host='0.0.0.0')
     finally:
         atexit.register(lambda: scheduler.shutdown())
