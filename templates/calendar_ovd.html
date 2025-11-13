@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>Document Setting | UATAS</title>
+    <title>Calendar OVD | UATAS</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta content="A fully featured admin theme which can be used to build CRM, CMS, etc." name="description">
     <meta content="Themesdesign" name="author">
@@ -69,134 +69,38 @@
         })();
     </script>
 
-    <script type="module" crossorigin src="../static/assets/app-DOPhicSe.js"></script>
-    <script type="module" crossorigin src="../static/assets/timepicker-DxeCcIwz.js"></script>
+
+
+    <script type="module" crossorigin src="../static/assets/apps-calendar-ovd.js"></script>
+    <link rel="modulepreload" crossorigin href="../static/assets/app-DOPhicSe.js">
     <link rel="stylesheet" crossorigin href="../static/assets/app-1Gqs6GNA.css">
-
-    <style>
-        .notification-fade-in {
-            animation: fadeInSlideIn 0.3s ease-out forwards;
-        }
-
-        .notification-fade-out {
-            animation: fadeOutSlideOut 0.3s ease-out forwards;
-        }
-
-        @keyframes fadeInSlideIn {
-            from {
-                opacity: 0;
-                transform: translateX(100%);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-
-        @keyframes fadeOutSlideOut {
-            from {
-                opacity: 1;
-                transform: translateX(0);
-            }
-
-            to {
-                opacity: 0;
-                transform: translateX(100%);
-            }
-        }
-    </style>
 </head>
 
 <body>
 
-    {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-    <div id="flash-messages"
-        style="position: fixed; top: 1rem; left: 0; right: 0; display: flex; justify-content: center; z-index: 9999; pointer-events: none;">
-        <div
-            style="display: flex; flex-direction: column; gap: 0.5rem; max-width: 400px; width: 100%; padding: 0 1rem;">
-            {% for category, message in messages %}
-            <div style="
-            display: flex;
-            align-items: center;
-            padding: 0.75rem 1rem;
-            border-radius: 0.5rem;
-            color: white;
-            font-weight: 500;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
-            pointer-events: auto;
-            opacity: 0;
-            transform: translateY(-10px);
-            animation: fadeIn 0.3s forwards;
-            {% if category == 'success' %}background-color: #10b981;
-            {% elif category == 'danger' %}background-color: #ef4444;
-            {% elif category == 'warning' %}background-color: #f59e0b;
-            {% elif category == 'info' %}background-color: #3b82f6;
-            {% else %}background-color: #6b7280;
-            {% endif %}">
-                {{ message }}
-            </div>
-            {% endfor %}
-        </div>
-    </div>
-
-    <style>
-        @keyframes fadeIn {
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-    </style>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const el = document.getElementById('flash-messages');
-            if (el) {
-                setTimeout(() => {
-                    el.style.transition = 'opacity 0.5s';
-                    el.style.opacity = '0';
-                    setTimeout(() => el.remove(), 500);
-                }, 2000);
-            }
-        });
-    </script>
-    {% endif %}
-    {% endwith %}
-
-    <!-- Sisanya dari template Anda -->
-    <!-- ... -->
-
     <div class="wrapper">
 
-        <!-- Start Sidebar -->
         <aside id="app-menu" class="app-menu">
 
-            <!-- Sidenav Menu Brand Logo -->
             <a href="{{ url_for('dashboard') }}"
                 class="logo-box sticky top-0 flex min-h-topbar-height items-center justify-start px-6 backdrop-blur-xs">
-                <!-- Light Brand Logo -->
                 <div class="logo-light">
                     <img src="../static/assets/arc/logos1.png" class="logo-lg h-10" alt="Light logo">
                     <img src="../static/assets/arc/logo.png" class="logo-sm h-5" alt="Small logo">
                 </div>
 
-                <!-- Dark Brand Logo -->
                 <div class="logo-dark">
                     <img src="../static/assets/arc/logos1.png" class="logo-lg h-10" alt="Dark logo">
                     <img src="../static/assets/arc/logo.png" class="logo-sm h-5" alt="Small logo">
                 </div>
             </a>
 
-            <!-- Sidenav Menu Toggle Button -->
             <div class="absolute top-0 end-5 flex h-topbar items-center justify">
                 <button id="button-hover-toggle" class="">
                     <i class="iconify tabler--circle size-5"></i>
                 </button>
             </div>
 
-            <!-- Sidenav Menu Item Link -->
             {% include 'menu.html' %}
 
         </aside>
@@ -308,7 +212,8 @@
                         </div>
 
                         <!-- Notification Button -->
-                        <div class="topbar-item hs-dropdown [--auto-close:inside] relative inline-flex" style="display: none;">
+                        <div class="topbar-item hs-dropdown [--auto-close:inside] relative inline-flex"
+                            style="display: none;">
                             <button type="button"
                                 class="hs-dropdown-toggle btn btn-icon size-8 hover:bg-default-150 rounded-full relative"
                                 aria-haspopup="menu" aria-expanded="false" aria-label="Dropdown">
@@ -659,7 +564,7 @@
                                 <div class="border-t border-t-default-200 -mx-2 my-2"></div>
 
                                 <div class="flex flex-col gap-y-1">
-                                    
+
 
                                     <div class="border-t border-default-200 -mx-2 my-1"></div>
 
@@ -679,7 +584,7 @@
 
                 <!-- Page Title Start -->
                 <div class="flex items-center md:justify-between flex-wrap gap-2 mb-4 print:hidden">
-                    <h4 class="text-default-900 text-lg font-semibold">Document Setting Management</h4>
+                    <h4 class="text-default-900 text-lg font-semibold">Calendar</h4>
 
                     <div class="md:flex hidden items-center gap-2 text-sm font-semibold">
                         <a href="#" class="text-sm font-medium text-default-700">Restructure</a>
@@ -692,311 +597,112 @@
                         <i
                             class="iconify tabler--chevron-right text-sm flex-shrink-0 text-default-500 rtl:rotate-180"></i>
 
-                        <a href="#" class="text-sm font-medium text-default-700" aria-current="page">Document
-                            Management</a>
+                        <a href="#" class="text-sm font-medium text-default-700" aria-current="page">Calendar</a>
                     </div>
                 </div>
-                <!-- Page Title End -->
-                <div class="card">
-                    <div class="card-header">
-                        <h6 class="card-title">Document Category</h6>
-                        <button class="btn btn-sm bg-primary text-white" data-hs-overlay="#addDocumentModal">
-                            <i data-lucide="plus" class="size-4 me-1"></i>Add Document Category
-                        </button>
+
+                <div class="grid lg:grid-cols-4 gap-5">
+                    <div class="lg:col-span-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <div id="calendar"></div>
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="flex flex-col">
-                        <div class="overflow-x-auto">
-                            <table class="min-w-full divide-y divide-default-200">
-                                <thead class="font-semibold whitespace-nowrap">
-                                    <tr class="text-sm text-default-800 divide-x divide-default-200">
-                                        <th class="px-3.5 py-3 text-center">#</th>
-                                        <th class="px-3.5 py-3 text-center">Document Name</th>
-                                        <th class="px-3.5 py-3 text-center">Status</th>
-                                        <th class="px-3.5 py-3 text-center">Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="divide-y divide-default-200">
-                                    {% for doc in documents %}
-                                    <tr class="text-default-800 text-sm divide-x divide-default-200">
-                                        <td class="px-3.5 py-3 text-center">{{ loop.index }}</td>
-                                        <td class="px-3.5 py-3 text-center">{{ doc.document_name }}</td>
-                                        <td class="px-3.5 py-3 text-center">
-                                            {% if doc.status == 1 %}
-                                            <span
-                                                class="inline-flex items-center gap-x-1.5 py-0.5 px-2.5 rounded text-xs font-medium bg-success/15 text-success">Active</span>
-                                            {% else %}
-                                            <span
-                                                class="inline-flex items-center gap-x-1.5 py-0.5 px-2.5 rounded text-xs font-medium bg-danger/10 text-danger">Not
-                                                Active</span>
-                                            {% endif %}
-                                        </td>
-                                        <td class="px-3.5 py-3 text-center">
-                                            <div class="flex items-center justify-center gap-2">
-                                                <a href="#"
-                                                    class="btn size-8 bg-default-200 hover:bg-primary/10 hover:text-primary"
-                                                    data-hs-overlay="#editDocumentModal-{{ doc.id }}">
-                                                    <i data-lucide="pencil" class="size-4"></i>
-                                                </a>
-                                                <a href="#"
-                                                    class="btn size-8 bg-default-200 hover:bg-primary/10 hover:text-primary"
-                                                    data-hs-overlay="#deleteDocumentModal-{{ doc.id }}">
-                                                    <i data-lucide="trash-2" class="size-4"></i>
-                                                </a>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    {% endfor %}
-                                    {% if documents|length == 0 %}
-                                    <tr>
-                                        <td colspan="4" class="text-center text-default-500 py-3">No documents category
-                                            found
-                                        </td>
-                                    </tr>
-                                    {% endif %}
-                                </tbody>
-                            </table>
+                    <div class="col-span-1" style="display: none;">
+                        <div class="card">
+                            <div class="card-body">
+                                <h6 class="mb-4 text-15">Detail SLA</h6>
+                                <div id="external-events" class="flex flex-col gap-3">
+
+                                    <p class="text-default-400">Here Details for SLA</p>
+
+                                    <div class="external-event fc-event text-success" data-class="!text-success">
+                                        <i class="iconify tabler--circle-filled me-2"></i>8-10 Days
+                                    </div>
+
+                                    <div class="external-event fc-event text-info" data-class="!text-info">
+                                        <i class="iconify tabler--circle-filled me-2"></i>4-7 Days
+                                    </div>
+
+                                    <div class="external-event fc-event text-warning" data-class="!text-warning">
+                                        <i class="iconify tabler--circle-filled me-2"></i>0-3 Days
+                                    </div>
+
+                                    <div class="flex items-center gap-2 " style="display: none;">
+                                        <input id='businessCalendar' class="form-checkbox" type="checkbox">
+                                        <label for="businessCalendar" class="align-middle cursor-pointer">Business Hours
+                                            & Week</label>
+                                    </div>
+
+                                    <div class="flex items-center gap-2" style="display: none;">
+                                        <input id='weekNumberCalendar' class="form-checkbox" type="checkbox">
+                                        <label for="weekNumberCalendar" class="align-middle cursor-pointer">Week
+                                            Number</label>
+                                    </div>
+
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-
-
             </main>
-
-            {% for doc in documents %}
-            <div id="editDocumentModal-{{ doc.id }}"
-                class="hs-overlay hidden fixed inset-0 z-80 overflow-y-auto pointer-events-none" role="dialog"
-                tabindex="-1" aria-labelledby="editDocumentLabel-{{ doc.id }}">
-                <div
-                    class="hs-overlay-animation-target hs-overlay-open:scale-100 hs-overlay-open:opacity-100 scale-95 opacity-0 ease-in-out transition-all duration-200 max-w-md w-full m-3 mx-auto min-h-[calc(100%-56px)] flex items-center">
-                    <div class="w-full card border border-default-200 shadow-2xs rounded-xl pointer-events-auto">
-                        <div class="card-header flex justify-between items-center">
-                            <h3 id="editDocumentLabel-{{ doc.id }}" class="font-semibold text-base text-default-800">
-                                Edit Status - {{ doc.document_name }}
-                            </h3>
-                            <button type="button" aria-label="Close" data-hs-overlay="#editDocumentModal-{{ doc.id }}">
-                                <i data-lucide="x" class="size-5"></i>
-                            </button>
-                        </div>
-
-                        <form action="{{ url_for('update_document', document_id=doc.id) }}" method="POST">
-                            <div class="card-body">
-                                <label class="block mb-2 text-sm font-medium text-default-700">Status</label>
-                                <select name="status" class="form-input w-full">
-                                    <option value="1" {% if doc.status==1 %}selected{% endif %}>Active</option>
-                                    <option value="2" {% if doc.status==2 %}selected{% endif %}>Not Active</option>
-                                </select>
-                            </div>
-
-                            <div class="card-footer flex justify-end gap-2">
-                                <button type="button" class="btn bg-transparent border-0 text-danger hover:bg-danger/10"
-                                    data-hs-overlay="#editDocumentModal-{{ doc.id }}">
-                                    Cancel
-                                </button>
-                                <button type="submit" class="btn bg-primary text-white">
-                                    Update
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-
-            <div id="deleteDocumentModal-{{ doc.id }}"
-                class="hs-overlay hidden fixed inset-0 z-80 overflow-y-auto pointer-events-none" role="dialog"
-                tabindex="-1" aria-labelledby="deleteDocumentLabel-{{ doc.id }}">
-                <div
-                    class="hs-overlay-animation-target hs-overlay-open:scale-100 hs-overlay-open:opacity-100 scale-95 opacity-0 ease-in-out transition-all duration-200 max-w-md w-full m-3 mx-auto min-h-[calc(100%-56px)] flex items-center">
-                    <div class="w-full card border border-default-200 shadow-2xs rounded-xl pointer-events-auto">
-                        <div class="card-header flex justify-between items-center">
-                            <h3 id="deleteDocumentLabel-{{ doc.id }}" class="font-semibold text-base text-default-800">
-                                Confirm Delete
-                            </h3>
-                            <button type="button" aria-label="Close"
-                                data-hs-overlay="#deleteDocumentModal-{{ doc.id }}">
-                                <i data-lucide="x" class="size-5"></i>
-                            </button>
-                        </div>
-
-                        <form action="{{ url_for('delete_document', document_id=doc.id) }}" method="POST">
-                            <div class="card-body">
-                                <p class="text-sm text-default-800">
-                                    Are you sure you want to delete document
-                                    <strong>"{{ doc.document_name }}"</strong>?
-                                </p>
-                            </div>
-
-                            <div class="card-footer flex justify-end gap-2">
-                                <button type="button" class="btn bg-transparent border-0 text-danger hover:bg-danger/10"
-                                    data-hs-overlay="#deleteDocumentModal-{{ doc.id }}">
-                                    Cancel
-                                </button>
-                                <button type="submit" class="btn bg-danger text-white">
-                                    Delete
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-            {% endfor %}
-
-
-            <div id="addDocumentModal" class="hs-overlay hidden fixed inset-0 z-80 overflow-y-auto">
-                <div class="max-w-md m-4 mx-auto flex items-center min-h-[calc(100%-56px)]">
-                    <div class="w-full card shadow-2xs rounded-xl">
-                        <div class="card-header">
-                            <h3 class="font-semibold text-base">Add Document Category</h3>
-                            <button type="button" data-hs-overlay="#addDocumentModal">
-                                <i data-lucide="x" class="size-5"></i>
-                            </button>
-                        </div>
-                        <form action="{{ url_for('add_document') }}" method="POST">
-                            <div class="card-body">
-                                <div class="mb-4">
-                                    <label class="block mb-2 text-sm font-medium">Document Name</label>
-                                    <input type="text" name="document_name" class="form-input w-full" required>
-                                </div>
-                                <div class="mb-4">
-                                    <label class="block mb-2 text-sm font-medium">Status</label>
-                                    <select name="status" class="form-input w-full">
-                                        <option value="1">Active</option>
-                                        <option value="2">Not Active</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="card-footer flex justify-end gap-2">
-                                <button type="button" class="btn text-danger bg-transparent border-0 hover:bg-danger/10"
-                                    data-hs-overlay="#addDocumentModal">Cancel</button>
-                                <button type="submit" class="btn bg-primary text-white">Save</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Footer Start -->
-            <footer class="mt-auto footer flex items-center py-5 border-t border-default-200">
-                <div class="lg:px-8 px-6 w-full flex md:justify-between justify-center gap-4">
-                    <div>
-                        <script>document.write(new Date().getFullYear())</script> © Uatas
-                    </div>
-                    <div class="md:flex hidden gap-2 item-center md:justify-end">
-                         Develop by<a href="https://uatas.id" target="_blank"
-                            class="text-primary">Uatas</a>
-                    </div>
-                </div>
-            </footer>
-            <!-- Footer End -->
         </div>
-        <!-- End Page content -->
-
-        <div id="department-delete-modal"
-            class="hs-overlay hidden size-full fixed top-0 start-0 z-80 overflow-x-hidden overflow-y-auto pointer-events-none"
-            role="dialog" tabindex="-1" aria-labelledby="department-delete-modal-label">
-            <div
-                class="hs-overlay-animation-target hs-overlay-open:scale-100 hs-overlay-open:opacity-100 scale-95 opacity-0 ease-in-out transition-all duration-200 md:w-sm m-3 mx-auto min-h-[calc(100%-56px)] flex items-center">
-                <div
-                    class="w-full flex flex-col card shadow-2xs border border-default-200 rounded-xl pointer-events-auto px-6 py-8 relative">
-                    <div class="absolute top-3 end-3">
-                        <button type="button" class="size-5 text-default-800" aria-label="Close"
-                            data-hs-overlay="#department-delete-modal">
-                            <span class="sr-only">Close</span>
-                            <i data-lucide="x" class="size-5"></i>
-                        </button>
-                    </div>
-
-                    <h3 class="font-semibold text-base text-default-800  text-center">
-                        <img src="data:image/png;base64,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"
-                            alt="" class="size-12 mx-auto">
-                        <div class="mt-5 text-center">
-                            <h5 class="mb-1 text-lg font-semibold text-default-800">Are you sure?</h5>
-                            <p class="text-default-500 text-sm font-normal">Are you certain you want to delete this
-                                record?</p>
-                            <div class="mt-5 flex gap-2 justify-center">
-                                <button data-hs-overlay="#department-delete-modal"
-                                    class="btn text-danger bg-transparent hover:bg-danger/10"
-                                    aria-label="Close">Cancel</button>
-                                <button class="bg-danger text-white  btn border-0 btn-sm">Yes,Delete It!</button>
-                            </div>
-                        </div>
-                    </h3>
-                </div>
-            </div>
-        </div>
-
-        <div id="department-edit-modal"
-            class="hs-overlay hidden size-full fixed top-0 start-0 z-80 overflow-x-hidden overflow-y-auto pointer-events-none"
-            role="dialog" tabindex="-1" aria-labelledby="department-delete-modal-label2">
-            <div
-                class="hs-overlay-animation-target hs-overlay-open:scale-100 hs-overlay-open:opacity-100 scale-95 opacity-0 ease-in-out transition-all duration-200 sm:max-w-lg sm:w-full m-3 sm:mx-auto min-h-[calc(100%-56px)] flex items-center">
-                <div
-                    class="w-full flex flex-col card border border-default-200 shadow-2xs rounded-xl pointer-events-auto">
-                    <div class="card-header">
-                        <h3 id="department-delete-modal-label2" class="font-bold text-default-800 text-base">
-                            Add Department
-                        </h3>
-                        <div>
-                            <button type="button" class="size-5 text-default-800" aria-label="Close"
-                                data-hs-overlay="#department-edit-modal">
-                                <span class="sr-only">Close</span>
-                                <i data-lucide="x" class="size-5"></i>
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="p-4 overflow-y-auto">
-                        <div class="flex flex-col gap-y-4">
-
-                            <div class="lg:col-span-12">
-                                <label for="Department Name" class="inline-block mb-2 text-base font-medium">Department
-                                    Name</label>
-                                <input type="text" id="Department Name" class="form-input"
-                                    placeholder="Department Name">
-                            </div>
-
-                            <!-- Date -->
-                            <div class="lg:col-span-12">
-                                <label for="Head of Dep. Name" class="inline-block mb-2 text-base font-medium">Head of
-                                    Dep. Name</label>
-                                <input type="text" placeholder="Head name" class="form-input">
-                            </div>
-
-                            <div class="lg:col-span-12">
-                                <label for="Phone Number" class="inline-block mb-2 text-base font-medium">Phone
-                                    Number</label>
-                                <input type="text" id="Phone Number" class="form-input" placeholder="1234567890">
-                            </div>
-
-                            <!-- Date -->
-                            <div class="lg:col-span-12">
-                                <label for="Email" class="inline-block mb-2 text-base font-medium">Email</label>
-                                <input type="text" placeholder="Enter Email" class="form-input">
-                            </div>
-
-                            <div class="lg:col-span-12">
-                                <label for="Total Employee" class="inline-block mb-2 text-base font-medium">Total
-                                    Employee</label>
-                                <input type="text" placeholder="0" class="form-input">
-                            </div>
-                        </div>
-
-                    </div>
-                    <div class="flex justify-end items-center gap-x-2 py-3 px-4">
-                        <button data-hs-overlay="#department-edit-modal"
-                            class="bg-transparent text-danger btn border-0 hover:bg-danger/10"
-                            aria-label="Close">Cancel</button>
-
-                        <button type="button" class="text-white  btn bg-primary">
-                            Add Department
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-
     </div>
+
+    <!-- Event Add Modal -->
+    <div id="event-modal"
+        class="hs-overlay hidden size-full fixed top-0 start-0 z-80 overflow-x-hidden overflow-y-auto pointer-events-none"
+        role="dialog" tabindex="-1" aria-labelledby="event-modal-label">
+        <div
+            class="hs-overlay-animation-target hs-overlay-open:scale-100 hs-overlay-open:opacity-100 scale-95 opacity-0 ease-in-out transition-all duration-200 sm:max-w-lg sm:w-full m-3 sm:mx-auto min-h-[calc(100%-56px)] flex items-center">
+            <div class="card w-full flex flex-col border border-default-200 shadow-2xs rounded-xl pointer-events-auto">
+                <div class="card-header">
+                    <h3 id="modal-title" class="font-semibold text-base text-default-800 dark:text-white">
+                        Detail Case
+                    </h3>
+                    <button type="button" class="size-5 text-default-800" aria-label="Close"
+                        data-hs-overlay="#event-modal">
+                        <span class="sr-only">Close</span>
+                        <i data-lucide="x" class="size-5"></i>
+                    </button>
+                </div>
+
+                <form class="needs-validation" name="event-form" id="form-event" autocomplete="off"
+                    data-url-prefix="{{ url_for('case_detail_collection', ticket_id=0)[:-1] }}">
+                    <div class="card-body">
+                        <div class="grid grid-cols-1 gap-4 xl:grid-cols-12">
+                            <div class="xl:col-span-12">
+                                <label for="event-title" class="inline-block mb-2 text-base font-medium">No Order</label>
+                                <input type="text" id="event-title" class="form-input mb-5" placeholder="Event name"
+                                    readonly>
+                                <input type="hidden" id="event-ticket-id" value="">
+
+                                <label for="event-tenor" class="inline-block mb-2 text-base font-medium">Tenor</label>
+                                <input type="text" id="event-tenor" class="form-input" placeholder="Event name"
+                                    readonly>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="card-footer flex gap-2 md:justify-end">
+                        <button type="reset" data-hs-overlay="#event-modal"
+                            class="bg-transparent text-danger btn border-0 hover:bg-red-50"
+                            style="display: none;">Cancel</button>
+
+                        <button type="reset" id="btn-delete-event"
+                            class="bg-transparent  text-danger btn border-0 hover:bg-red-50"
+                            style="display: none;">Delete</button>
+
+                        <button type="submit" id="btn-save-event" class="btn bg-primary text-white">View Case</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- End Event Add Modal -->
 
     <!-- Theme Settings Offcanvas -->
     <div>
@@ -1306,6 +1012,7 @@
             </div>
         </div>
     </div>
+
 </body>
 
 </html>

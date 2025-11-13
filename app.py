@@ -608,7 +608,6 @@ def logout():
 
 ##### User Management Routes #####
 
-
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
@@ -1630,93 +1629,6 @@ def add_months(source_date, months):
     day = min(source_date.day, calendar.monthrange(year, month)[1])
     return source_date.replace(year=year, month=month, day=day)
 
-
-# @app.route('/view-tenor', methods=['GET'])
-# @app.route('/view-tenor/<int:ticket_id>', methods=['GET'])
-# @login_required
-# def view_tenor(ticket_id=None):
-#     if ticket_id:
-#         tenor = Tenor.query.filter_by(ticket_id=ticket_id).first()
-#         if tenor:
-#             row_data = {
-#                 'nomor_kontrak': tenor.nomor_kontrak,
-#                 'total_nominal_pengembalian': sum(
-#                     float(getattr(tenor, f'nominal_tenor_{i}', 0)) for i in range(1, 13)
-#                     if getattr(tenor, f'nominal_tenor_{i}', None) is not None
-#                 ),
-#                 'cicilan': []
-#             }
-
-#             jumlah_tenor_aktif = 0
-#             for i in range(1, 13):
-#                 if getattr(tenor, f'tenor_{i}', None) is not None and getattr(tenor, f'nominal_tenor_{i}', None) is not None and getattr(tenor, f'ovd_{i}', None) is not None:
-#                     jumlah_tenor_aktif = i
-#                 else:
-#                     break
-
-#             row_data['jumlah_tenor_aktif'] = jumlah_tenor_aktif
-
-#             max_cicilan = 12
-#             for i in range(1, max_cicilan + 1):
-#                 tenor_i = getattr(tenor, f'tenor_{i}', None)
-#                 nominal_i = getattr(tenor, f'nominal_tenor_{i}', None)
-#                 ovd_i = getattr(tenor, f'ovd_{i}', None)
-
-#                 if tenor_i is not None and nominal_i is not None and ovd_i is not None:
-#                     row_data['cicilan'].append({
-#                         'number': i,
-#                         'tanggal_jatuh_tempo': ovd_i.strftime('%d/%m/%Y'),
-#                         'nominal': float(nominal_i)
-#                     })
-#                 else:
-#                     row_data['cicilan'].append(None)
-
-#             tenor_data = [row_data]
-#         else:
-#             tenor_data = []
-#     else:
-#         all_tenors = Tenor.query.all()
-#         tenor_data = []
-#         for tenor in all_tenors:
-#             total_nominal = sum(
-#                 float(getattr(tenor, f'nominal_tenor_{i}', 0)) for i in range(1, 13)
-#                 if getattr(tenor, f'nominal_tenor_{i}', None) is not None
-#             )
-
-#             jumlah_tenor_aktif = 0
-#             for i in range(1, 13):
-#                 if getattr(tenor, f'tenor_{i}', None) is not None and getattr(tenor, f'nominal_tenor_{i}', None) is not None and getattr(tenor, f'ovd_{i}', None) is not None:
-#                     jumlah_tenor_aktif = i
-#                 else:
-#                     break
-
-#             row_data = {
-#                 'nomor_kontrak': tenor.nomor_kontrak,
-#                 'total_nominal_pengembalian': total_nominal,
-#                 'cicilan': [],
-#                 'jumlah_tenor_aktif': jumlah_tenor_aktif
-#             }
-
-#             max_cicilan = 12
-#             for i in range(1, max_cicilan + 1):
-#                 tenor_i = getattr(tenor, f'tenor_{i}', None)
-#                 nominal_i = getattr(tenor, f'nominal_tenor_{i}', None)
-#                 ovd_i = getattr(tenor, f'ovd_{i}', None)
-
-#                 if tenor_i is not None and nominal_i is not None and ovd_i is not None:
-#                     row_data['cicilan'].append({
-#                         'number': i,
-#                         'tanggal_jatuh_tempo': ovd_i.strftime('%d/%m/%Y'),
-#                         'nominal': float(nominal_i)
-#                     })
-#                 else:
-#                     row_data['cicilan'].append(None)
-
-#             tenor_data.append(row_data)
-
-#     return render_template('view_tenor.html', user=current_user, tenor_data=tenor_data)
-
-
 @app.route('/view-kontrak/<int:id>', methods=['GET'])
 @login_required
 def view_kontrak(id):
@@ -1984,6 +1896,8 @@ def sla_class(sla: int | None) -> str:
         return "!text-info"
     return "!text-danger"
 
+def ovd_class(_):
+    return "!text-danger text-center"
 
 @app.route('/api/calendar-events', methods=['GET'])
 @login_required
@@ -2012,12 +1926,36 @@ def api_calendar_events():
 
     return jsonify(events)
 
+@app.route('/api/calendar-ovd', methods=['GET'])
+@login_required
+def api_calendar_ovd():
+    tenors = Tenor.query.all()
+    events = []
+
+    for tenor in tenors:
+        for i in range(1, 13):
+            ovd_value = getattr(tenor, f"ovd_{i}")
+            if ovd_value:
+                events.append({
+                    "id": tenor.ticket_id,
+                    "title": f"{tenor.nomor_kontrak}",
+                    "start": ovd_value.strftime("%Y-%m-%d"),
+                    "nomor_kontrak": tenor.nomor_kontrak,
+                    "tenor": f"Tenor ke-{i}",
+                    "className":ovd_class(ovd_value)
+                })
+
+    return jsonify(events)
 
 @app.route('/calendar', methods=['GET'])
 @login_required
 def calendar_view():
     return render_template('calendar.html', user=current_user)
 
+@app.route('/calendar-ovd', methods=['GET'])
+@login_required
+def calendar_ovd():
+    return render_template('calendar_ovd.html', user=current_user)
 
 @app.route('/close/<int:id>', methods=['POST'])
 @login_required
