@@ -1,6 +1,7 @@
 static/uploads/
 static/assets/
 migrations/
+create_admin.py
 __pycache__/
 *.pyc
 *.pyo
