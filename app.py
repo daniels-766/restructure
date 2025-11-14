@@ -2221,6 +2221,9 @@ def create_tables_if_not_exists():
         db.create_all()
         g.tables_created = True
 
+import logging
+log = logging.getLogger('werkzeug')
+log.setLevel(logging.WARNING)
 
 if __name__ == '__main__':
     scheduler = BackgroundScheduler(timezone='Asia/Jakarta')
@@ -2232,7 +2235,7 @@ if __name__ == '__main__':
         id='reduce_sla_job'
     )
     scheduler.start()
-    print("Scheduler untuk pengurangan SLA telah dimulai...")
+    print("Program Running⏳")
 
     try:
         app.run(debug=True, port=5006, host='0.0.0.0')
