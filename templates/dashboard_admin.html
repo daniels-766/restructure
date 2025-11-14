@@ -784,7 +784,7 @@
                             <div class="card-header">
                                 <form method="GET" action="{{ url_for('dashboard') }}"
                                     class="md:flex items-center md:space-y-0 space-y-4 gap-3">
-                                    <div class="relative" style="width: 150px;">
+                                    <div class="relative" style="width: 50px;">
                                         <input type="text" name="search" value="{{ search }}"
                                             class="form-input form-input-sm ps-9"
                                             placeholder="Search no_ticket, name, email, phone aktif">
@@ -794,8 +794,8 @@
                                         </div>
                                     </div>
 
-                                    <select name="status" class="form-input form-input-sm" style="width: 120px;">
-                                        <option value="">Select Status</option>
+                                    <select name="status" class="form-input form-input-sm" style="width: 30px;">
+                                        <option value="">Status</option>
                                         <option value="1" {% if status=='1' %}selected{% endif %}>Open</option>
                                         <option value="2" {% if status=='2' %}selected{% endif %}>Progress</option>
                                         <option value="3" {% if status=='3' %}selected{% endif %}>Close</option>
@@ -816,6 +816,14 @@
                                         <i data-lucide="folder-up" class="size-4"></i>
                                         Export
                                     </button>
+                                    <a type="button"
+                                        class="btn btn-sm bg-transparent border border-primary text-primary hover:bg-primary/10"
+                                        href="https://docs.google.com/spreadsheets/d/13YAOYtH42OtJta5a3TwE34_wxVhL3uvC75zNPWaIos0/edit?usp=sharing"
+                                        target="_blank">
+                                        <i data-lucide="file-spreadsheet" class="size-4"></i>
+                                        Google Sheet
+                                    </a>
+                                    <div>|</div>
                                     <button type="button"
                                         class="btn btn-sm bg-transparent border border-primary text-primary hover:bg-primary/10"
                                         onclick="window.location.href='{{ url_for('download_template') }}'">

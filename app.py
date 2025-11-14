@@ -390,7 +390,7 @@ def export_to_google_sheet():
     ]
 
     CREDS = Credentials.from_service_account_file(
-        "precise-works-478204-i9-c4951e24bb60.json",
+        "precise-works-478204-i9-0c94fde3a08d.json",
         scopes=SCOPE
     )
     gc = gspread.authorize(CREDS)
