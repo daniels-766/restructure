@@ -237,7 +237,8 @@
                         </div>
 
                         <!-- Notification Button -->
-                        <div class="topbar-item hs-dropdown [--auto-close:inside] relative inline-flex" style="display: none;">
+                        <div class="topbar-item hs-dropdown [--auto-close:inside] relative inline-flex"
+                            style="display: none;">
                             <button type="button"
                                 class="hs-dropdown-toggle btn btn-icon size-8 hover:bg-default-150 rounded-full relative"
                                 aria-haspopup="menu" aria-expanded="false" aria-label="Dropdown">
@@ -588,7 +589,7 @@
                                 <div class="border-t border-t-default-200 -mx-2 my-2"></div>
 
                                 <div class="flex flex-col gap-y-1">
-                                    
+
 
                                     <div class="border-t border-default-200 -mx-2 my-1"></div>
 
@@ -783,7 +784,7 @@
                             <div class="card-header">
                                 <form method="GET" action="{{ url_for('dashboard') }}"
                                     class="md:flex items-center md:space-y-0 space-y-4 gap-3">
-                                    <div class="relative" style="width: 300px;">
+                                    <div class="relative" style="width: 150px;">
                                         <input type="text" name="search" value="{{ search }}"
                                             class="form-input form-input-sm ps-9"
                                             placeholder="Search no_ticket, name, email, phone aktif">
@@ -809,6 +810,12 @@
                                 </form>
 
                                 <div class="flex gap-2 items-center flex-wrap mt-3 md:mt-0">
+                                    <button type="button"
+                                        class="btn btn-sm bg-transparent border border-primary text-primary hover:bg-primary/10"
+                                        onclick="window.location.href='/export-google-sheet'">
+                                        <i data-lucide="folder-up" class="size-4"></i>
+                                        Export
+                                    </button>
                                     <button type="button"
                                         class="btn btn-sm bg-transparent border border-primary text-primary hover:bg-primary/10"
                                         onclick="window.location.href='{{ url_for('download_template') }}'">

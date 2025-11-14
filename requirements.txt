@@ -8,3 +8,8 @@ flask_apscheduler
 APScheduler
 pandas 
 openpyxl
+gspread 
+google-auth
+
+pip install gspread google-auth
+pip install oauth2client

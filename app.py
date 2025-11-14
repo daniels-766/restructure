@@ -376,6 +376,111 @@ def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+##### Export to Google Sheets #####
+
+import gspread
+from google.oauth2.service_account import Credentials
+import locale
+from datetime import datetime
+
+def export_to_google_sheet():
+    SCOPE = [
+        "https://www.googleapis.com/auth/spreadsheets",
+        "https://www.googleapis.com/auth/drive"
+    ]
+
+    CREDS = Credentials.from_service_account_file(
+        "precise-works-478204-i9-c4951e24bb60.json",
+        scopes=SCOPE
+    )
+    gc = gspread.authorize(CREDS)
+
+    spreadsheet = gc.open("Report-spreadsheet")
+    worksheet = spreadsheet.worksheet("Sheet1")
+
+    data = []
+
+    tenors = Tenor.query.join(Ticket).all()
+
+    no = 1
+    for tenor in tenors:
+        t = tenor.ticket
+        row = build_row(no, t, tenor)
+        data.append(row)
+        no += 1
+
+    worksheet.update("A3", data)
+    print("Export ke Google Sheet Sukses!")
+
+locale.setlocale(locale.LC_ALL, 'id_ID.UTF-8')
+
+def format_rupiah(value):
+    if value is None or value == "":
+        return ""
+    if str(value) == "0.00":
+        return 0
+
+    angka = float(value)
+    return "Rp " + "{:,.0f}".format(angka).replace(",", ".")
+
+
+def format_tanggal(db_value):
+    if not db_value:
+        return ""
+    try:
+        if isinstance(db_value, str):
+            dt = datetime.strptime(db_value, "%Y-%m-%d")
+        else:
+            dt = db_value
+        return dt.strftime("%d/%m/%Y")
+    except:
+        return ""
+
+def build_row(no, t, tenor):
+
+    order_value = tenor.nomor_kontrak if tenor.nomor_kontrak else ""
+
+    tenor_count = sum(
+        1 for i in range(1, 13)
+        if getattr(tenor, f"tenor_{i}")
+    )
+
+    row = [
+        no,
+        t.tanggal_pengaduan.strftime("%Y-%m-%d") if t.tanggal_pengaduan else "",
+        t.pic_handle.name,
+        t.email,
+        t.nama,
+        t.phone_pengajuan,
+        "VPN",
+        order_value,
+        tenor_count,
+    ]
+
+    for i in range(1, 13):
+
+        nominal_raw = getattr(tenor, f"nominal_tenor_{i}")
+        nominal = format_rupiah(nominal_raw)
+
+        jt_raw = getattr(tenor, f"ovd_{i}")
+        jt = format_tanggal(jt_raw)
+
+        row.append(nominal)
+        row.append(jt)
+
+    return row
+
+@app.route("/export-google-sheet")
+def export_google_sheet_route():
+    try:
+        export_to_google_sheet()
+        flash("Export ke Google Sheet berhasil!", "success")
+    except Exception as e:
+        flash(f"Export gagal: {str(e)}", "danger")
+
+    return redirect(url_for("dashboard")) 
+
+##### Export to Google Sheets #####
 
 @app.route('/')
 def index():
