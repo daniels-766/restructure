@@ -111,7 +111,7 @@
                 </a>
             </li> -->
 
-            <li class="menu-item">
+            <!-- <li class="menu-item">
                 <a class="menu-link" href="{{ url_for('calendar_view') }}">
                     <span class="menu-icon"><i data-lucide="calendar-1"></i></span>
                     <div class="menu-text">Calendar SLA</div>
@@ -123,6 +123,27 @@
                     <span class="menu-icon"><i data-lucide="calendar-clock"></i></span>
                     <div class="menu-text">Calendar OVD</div>
                 </a>
+            </li> -->
+
+            <li class="menu-item hs-accordion">
+                <a href="javascript:void(0)" class="hs-accordion-toggle menu-link">
+                    <span class="menu-icon"><i data-lucide="calendar-1"></i></span>
+                    <span class="menu-text"> Calendar </span>
+                    <span class="menu-arrow"></span>
+                </a>
+
+                <ul class="sub-menu hs-accordion-content hidden">
+                    <li class="menu-item">
+                        <a href="{{ url_for('calendar_view') }}" class="menu-link">
+                            <span class="menu-text">SLA</span>
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="{{ url_for('calendar_ovd') }}" class="menu-link">
+                            <span class="menu-text">OVD</span>
+                        </a>
+                    </li>
+                </ul>
             </li>
         </ul>
     </div>

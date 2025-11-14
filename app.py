@@ -355,23 +355,19 @@ def generate_ticket_number():
 
 
 def reduce_sla_daily():
-    """
-    Fungsi ini akan dipanggil setiap hari pukul 00:00 WIB.
-    Mengurangi nilai SLA sebesar 1 untuk semua tiket yang SLAnya > 0.
-    """
-    print(f"Memproses pengurangan SLA otomatis pada {get_jakarta_time()}")
-    try:
-        tickets_to_update = Ticket.query.filter(Ticket.sla > 0).all()
+    with app.app_context():
+        print(f"Memproses pengurangan SLA otomatis pada {get_jakarta_time()}")
+        try:
+            tickets_to_update = Ticket.query.filter(Ticket.sla > 0).all()
 
-        for ticket in tickets_to_update:
-            ticket.sla -= 1
+            for ticket in tickets_to_update:
+                ticket.sla -= 1
 
-        db.session.commit()
-        print(
-            f"Pengurangan SLA selesai. {len(tickets_to_update)} tiket diperbarui.")
-    except Exception as e:
-        db.session.rollback()
-        print(f"Error saat mengurangi SLA: {e}")
+            db.session.commit()
+            print(f"Pengurangan SLA selesai. {len(tickets_to_update)} tiket diperbarui.")
+        except Exception as e:
+            db.session.rollback()
+            print(f"Error saat mengurangi SLA: {e}")
 
 
 def allowed_file(filename):
