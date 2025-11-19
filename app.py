@@ -2200,47 +2200,47 @@ def chat():
     return render_template('chat.html', user=current_user, users=users)
 
 
-@app.route('/chat/<int:user_id>')
-@login_required
-def chat_with(user_id):
-    other_user = User.query.get_or_404(user_id)
-    messages = Message.query.filter(
-        ((Message.sender_id == current_user.id) & (Message.receiver_id == user_id)) |
-        ((Message.sender_id == user_id) & (Message.receiver_id == current_user.id))
-    ).order_by(Message.timestamp.asc()).all()
+# @app.route('/chat/<int:user_id>')
+# @login_required
+# def chat_with(user_id):
+#     other_user = User.query.get_or_404(user_id)
+#     messages = Message.query.filter(
+#         ((Message.sender_id == current_user.id) & (Message.receiver_id == user_id)) |
+#         ((Message.sender_id == user_id) & (Message.receiver_id == current_user.id))
+#     ).order_by(Message.timestamp.asc()).all()
 
-    return jsonify({
-        'other_user': {
-            'id': other_user.id,
-            'name': other_user.name,
-            'email': other_user.email
-        },
-        'messages': [
-            {
-                'sender_id': m.sender_id,
-                'receiver_id': m.receiver_id,
-                'message': m.message,
-                'timestamp': m.timestamp.strftime('%H:%M')
-            } for m in messages
-        ]
-    })
+#     return jsonify({
+#         'other_user': {
+#             'id': other_user.id,
+#             'name': other_user.name,
+#             'email': other_user.email
+#         },
+#         'messages': [
+#             {
+#                 'sender_id': m.sender_id,
+#                 'receiver_id': m.receiver_id,
+#                 'message': m.message,
+#                 'timestamp': m.timestamp.strftime('%H:%M')
+#             } for m in messages
+#         ]
+#     })
 
 
-@app.route('/send_message', methods=['POST'])
-@login_required
-def send_message():
-    receiver_id = request.form.get('receiver_id')
-    message_text = request.form.get('message')
+# @app.route('/send_message', methods=['POST'])
+# @login_required
+# def send_message():
+#     receiver_id = request.form.get('receiver_id')
+#     message_text = request.form.get('message')
 
-    if not receiver_id or not message_text:
-        return jsonify({'error': 'Missing fields'}), 400
+#     if not receiver_id or not message_text:
+#         return jsonify({'error': 'Missing fields'}), 400
 
-    message = Message(sender_id=current_user.id,
-                      receiver_id=receiver_id, message=message_text)
-    db.session.add(message)
-    db.session.commit()
+#     message = Message(sender_id=current_user.id,
+#                       receiver_id=receiver_id, message=message_text)
+#     db.session.add(message)
+#     db.session.commit()
 
-    return jsonify({'success': True, 'timestamp': message.timestamp.strftime('%H:%M')})
+#     return jsonify({'success': True, 'timestamp': message.timestamp.strftime('%H:%M')})
 
 
 @app.route('/download-template')

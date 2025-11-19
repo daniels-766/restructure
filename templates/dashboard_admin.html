@@ -958,10 +958,10 @@
                                                     <tr class="text-default-800 font-normal text-sm whitespace-nowrap">
                                                         <td class="px-3.5 py-3  text-sm text-primary">#{{
                                                             ticket.no_ticket }}</td>
-                                                        <td class="flex py-3 px-3.5 items-center gap-3">
+                                                        <td class="py-3 px-3.5">
                                                             <div>
-                                                                <h6 class="mb-1.5 font-semibold">
-                                                                    <a href="#" class="text-default-800">{{ ticket.nama
+                                                                <h6 class="font-semibold">
+                                                                    <a href="{{ url_for('ticket_detail', ticket_id=ticket.id) }}" class="text-default-800">{{ ticket.nama
                                                                         }}</a>
                                                                 </h6>
                                                             </div>
@@ -1016,11 +1016,11 @@
                                                                         Overview
                                                                     </a>
 
-                                                                    <a class="flex items-center gap-1.5 py-1.5 font-medium px-3 text-default-500 hover:bg-default-150 rounded"
+                                                                    <!-- <a class="flex items-center gap-1.5 py-1.5 font-medium px-3 text-default-500 hover:bg-default-150 rounded"
                                                                         href="#">
                                                                         <i data-lucide="trash-2" class="size-3"></i>
                                                                         Delete
-                                                                    </a>
+                                                                    </a> -->
                                                                 </div>
                                                             </div>
                                                         </td>

@@ -1093,10 +1093,10 @@
                                                         href="{{ url_for('ticket_detail', ticket_id=ticket.id) }}">#{{
                                                         ticket.no_ticket }}</a>
                                                 </td>
-                                                <td class="flex py-3 px-3.5 items-center gap-3">
+                                                <td class="py-3 px-3.5">
                                                     <div>
-                                                        <h6 class="mb-1.5 font-semibold">
-                                                            <a href="#" class="text-default-800">{{ ticket.nama }}</a>
+                                                        <h6 class="font-semibold">
+                                                            <a href="{{ url_for('ticket_detail', ticket_id=ticket.id) }}" class="text-default-800">{{ ticket.nama }}</a>
                                                         </h6>
                                                     </div>
                                                 </td>
