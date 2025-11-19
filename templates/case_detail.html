@@ -273,7 +273,8 @@
                         </div>
 
                         <!-- Notification Button -->
-                        <div class="topbar-item hs-dropdown [--auto-close:inside] relative inline-flex" style="display: none;">
+                        <div class="topbar-item hs-dropdown [--auto-close:inside] relative inline-flex"
+                            style="display: none;">
                             <button type="button"
                                 class="hs-dropdown-toggle btn btn-icon size-8 hover:bg-default-150 rounded-full relative"
                                 aria-haspopup="menu" aria-expanded="false" aria-label="Dropdown">
@@ -624,7 +625,7 @@
                                 <div class="border-t border-t-default-200 -mx-2 my-2"></div>
 
                                 <div class="flex flex-col gap-y-1">
-                                    
+
 
                                     <div class="border-t border-default-200 -mx-2 my-1"></div>
 
@@ -845,11 +846,15 @@
                                         <div class="flex items-center gap-3">
                                             <div>
                                                 <h6 class="mb-1 card-title">
-                                                    <a
+                                                    <span
                                                         class="transition-all duration-300 ease-linear hover:text-primary">
                                                         {{ loop.index }}. {{ item.order_number }}
-                                                    </a>
+                                                        {% if item.nominal %}
+                                                        ⇒ <b>{{ item.nominal }}</b>
+                                                        {% endif %}
+                                                    </span>
                                                 </h6>
+
                                             </div>
                                         </div>
 
@@ -1192,9 +1197,12 @@
                                         <div class="flex justify-between">
                                             <div>
                                                 <h6 class="mb-2 card-title">Case Closed</h6>
-                                                <p class="text-default-500 text-sm">Your case has been closed at <b>{{ ticket.close_date.strftime(' %H:%M, %d-%m-%Y') if ticket.close_date else
-                                                'N/A' }} </b>.
-                                            <p>Closed by: {{ ticket.close_user.name if ticket.close_user else 'System' }}</p>
+                                                <p class="text-default-500 text-sm">Your case has been closed at <b>{{
+                                                        ticket.close_date.strftime(' %H:%M, %d-%m-%Y') if
+                                                        ticket.close_date else
+                                                        'N/A' }} </b>.
+                                                <p>Closed by: {{ ticket.close_user.name if ticket.close_user else
+                                                    'System' }}</p>
                                             </div>
                                             <!-- <p class="text-[13px] text-default-400 text-end">
                                                 {{ ticket.close_date.strftime('%d-%m-%Y') if ticket.close_date else
@@ -1272,8 +1280,7 @@
                         <script>document.write(new Date().getFullYear())</script> © Uatas
                     </div>
                     <div class="md:flex hidden gap-2 item-center md:justify-end">
-                         Develop by<a href="https://uatas.id" target="_blank"
-                            class="text-primary">Uatas</a>
+                        Develop by<a href="https://uatas.id" target="_blank" class="text-primary">Uatas</a>
                     </div>
                 </div>
             </footer>
@@ -1338,16 +1345,17 @@
 
                     <div class="card-body overflow-y-auto">
                         <div class="mb-4">
-                            <label for="" class="inline-block mb-2 text-sm text-default-800 font-medium">Move this case to <b><u>Collection</u></b> stage?</label>
+                            <label for="" class="inline-block mb-2 text-sm text-default-800 font-medium">Move this case
+                                to <b><u>Collection</u></b> stage?</label>
                         </div>
 
                         <div class="mt-4 flex gap-2 md:justify-end">
                             <form action="{{ url_for('move_case', id=ticket.id) }}" method="POST">
-                            <button
-                                class="btn border-0 text-danger bg-transparent transition-all duration-300 hover:bg-danger/10"
-                                aria-label="Close" data-hs-overlay="#ecommerce-sellers-add">Cancel</button>
+                                <button
+                                    class="btn border-0 text-danger bg-transparent transition-all duration-300 hover:bg-danger/10"
+                                    aria-label="Close" data-hs-overlay="#ecommerce-sellers-add">Cancel</button>
 
-                            <button class="btn bg-primary text-white">Yes</button>
+                                <button class="btn bg-primary text-white">Yes</button>
                             </form>
                         </div>
                     </div>

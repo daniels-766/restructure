@@ -273,7 +273,8 @@
                         </div>
 
                         <!-- Notification Button -->
-                        <div class="topbar-item hs-dropdown [--auto-close:inside] relative inline-flex" style="display: none;">
+                        <div class="topbar-item hs-dropdown [--auto-close:inside] relative inline-flex"
+                            style="display: none;">
                             <button type="button"
                                 class="hs-dropdown-toggle btn btn-icon size-8 hover:bg-default-150 rounded-full relative"
                                 aria-haspopup="menu" aria-expanded="false" aria-label="Dropdown">
@@ -624,7 +625,7 @@
                                 <div class="border-t border-t-default-200 -mx-2 my-2"></div>
 
                                 <div class="flex flex-col gap-y-1">
-                                    
+
 
                                     <div class="border-t border-default-200 -mx-2 my-1"></div>
 
@@ -731,6 +732,19 @@
                                         </div>
 
                                         <div>
+                                            <label class="inline-block mb-2 text-sm text-default-800 font-medium">
+                                                Nominal
+                                            </label>
+
+                                            <div id="nominalOrderContainer">
+                                                <div class="nominal-input-group mb-2">
+                                                    <input type="number" name="nominalOrder[]" class="form-input"
+                                                        placeholder="Input Nominal">
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div>
                                             <label for="phonePengajuan"
                                                 class="inline-block mb-2 text-sm text-default-800 font-medium">Phone
                                                 Pengajuan</label>
@@ -779,9 +793,6 @@
                                                 <option value="3">Close</option>
                                             </select>
                                         </div>
-                                    </div>
-
-                                    <div class="grid grid-cols-1 gap-5">
                                         <div>
                                             <label for="detailProblem"
                                                 class="inline-block mb-2 text-sm text-default-800 font-medium">Detail
@@ -791,6 +802,15 @@
                                         </div>
                                     </div>
 
+                                    <!-- <div class="grid grid-cols-1 gap-5">
+                                        <div>
+                                            <label for="detailProblem"
+                                                class="inline-block mb-2 text-sm text-default-800 font-medium">Detail
+                                                Problem</label>
+                                            <textarea class="form-input" id="detailProblem" name="detailProblem"
+                                                placeholder="Input Detail" rows="3" required></textarea>
+                                        </div>
+                                    </div> -->
                                     <div class="flex justify-end gap-2 mt-5">
                                         <a href="{{ url_for('dashboard') }}"
                                             class="btn border-0 text-danger bg-transparent hover:bg-danger/10">Back</a>
@@ -854,8 +874,7 @@
                         <script>document.write(new Date().getFullYear())</script> © Uatas
                     </div>
                     <div class="md:flex hidden gap-2 item-center md:justify-end">
-                         Develop by<a href="https://uatas.id" target="_blank"
-                            class="text-primary">Uatas</a>
+                        Develop by<a href="https://uatas.id" target="_blank" class="text-primary">Uatas</a>
                     </div>
                 </div>
             </footer>
@@ -1281,6 +1300,42 @@
                 orderNumberInputs.forEach(input => input.remove());
             });
         </script>
+        <script>
+            function syncNominalInputs() {
+                const orderCount = document.querySelectorAll('#orderNumberContainer .order-number-input-group').length;
+                const nominalContainer = document.getElementById('nominalOrderContainer');
+                const currentNominals = nominalContainer.children.length;
+
+                while (nominalContainer.children.length < orderCount) {
+                    const inputGroup = document.createElement('div');
+                    inputGroup.className = 'nominal-input-group mb-2';
+                    inputGroup.innerHTML = `
+                <input type="text" name="nominalOrder[]" 
+                       class="form-input" placeholder="Input Nominal">
+            `;
+                    nominalContainer.appendChild(inputGroup);
+                }
+
+                while (nominalContainer.children.length > orderCount) {
+                    nominalContainer.lastElementChild.remove();
+                }
+            }
+
+            const originalAddOrderInput = addOrderInput;
+            addOrderInput = function () {
+                originalAddOrderInput();
+                syncNominalInputs();
+            };
+
+            const originalRemoveOrderInput = removeOrderInput;
+            removeOrderInput = function (btn) {
+                originalRemoveOrderInput(btn);
+                syncNominalInputs();
+            };
+
+            syncNominalInputs();
+        </script>
+
 </body>
 
 </html>

@@ -1,3 +1,8 @@
+import logging
+import gspread
+from datetime import datetime
+import locale
+from google.oauth2.service_account import Credentials
 from decimal import Decimal
 from sqlalchemy import func, extract
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, g, send_from_directory
@@ -92,6 +97,7 @@ class Ticket(db.Model):
     phone_aktif = db.Column(db.String(20), nullable=False)
     email = db.Column(db.String(120), nullable=False)
     order_number = db.Column(db.String(500), nullable=True)
+    nominal_order = db.Column(db.String(500), nullable=True)
     pic_handle_id = db.Column(
         db.Integer, db.ForeignKey('users.id'), nullable=False)
     product_id = db.Column(db.Integer, db.ForeignKey(
@@ -115,6 +121,7 @@ class Ticket(db.Model):
 
     def __repr__(self):
         return f'<Ticket {self.no_ticket}>'
+
 
 class Document(db.Model):
     __tablename__ = 'documents'
@@ -281,20 +288,21 @@ class Tenor(db.Model):
     def __repr__(self):
         return f'<Tenor {self.nomor_kontrak} for Ticket {self.ticket_id}>'
 
-class Message(db.Model):
-    __tablename__ = 'messages'
-    id = db.Column(db.Integer, primary_key=True)
-    sender_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    receiver_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    content = db.Column(db.Text, nullable=False)
-    timestamp = db.Column(db.DateTime, default=db.func.current_timestamp())
+# class Message(db.Model):
+#     __tablename__ = 'messages'
+#     id = db.Column(db.Integer, primary_key=True)
+#     sender_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+#     receiver_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+#     content = db.Column(db.Text, nullable=False)
+#     timestamp = db.Column(db.DateTime, default=db.func.current_timestamp())
 
-    sender = db.relationship('User', foreign_keys=[sender_id], backref='sent_messages')
-    receiver = db.relationship('User', foreign_keys=[receiver_id], backref='received_messages')
+#     sender = db.relationship('User', foreign_keys=[sender_id], backref='sent_messages')
+#     receiver = db.relationship('User', foreign_keys=[receiver_id], backref='received_messages')
 
-    def __repr__(self):
-        return f"<Message from {self.sender_id} to {self.receiver_id}>"
-    
+#     def __repr__(self):
+#         return f"<Message from {self.sender_id} to {self.receiver_id}>"
+
+
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
@@ -364,7 +372,8 @@ def reduce_sla_daily():
                 ticket.sla -= 1
 
             db.session.commit()
-            print(f"Pengurangan SLA selesai. {len(tickets_to_update)} tiket diperbarui.")
+            print(
+                f"Pengurangan SLA selesai. {len(tickets_to_update)} tiket diperbarui.")
         except Exception as e:
             db.session.rollback()
             print(f"Error saat mengurangi SLA: {e}")
@@ -378,10 +387,6 @@ def allowed_file(filename):
 
 ##### Export to Google Sheets #####
 
-import gspread
-from google.oauth2.service_account import Credentials
-import locale
-from datetime import datetime
 
 def export_to_google_sheet():
     SCOPE = [
@@ -412,7 +417,9 @@ def export_to_google_sheet():
     worksheet.update("A3", data)
     print("Export ke Google Sheet Sukses!")
 
+
 locale.setlocale(locale.LC_ALL, 'id_ID.UTF-8')
+
 
 def format_rupiah(value):
     if value is None or value == "":
@@ -436,6 +443,7 @@ def format_tanggal(db_value):
     except:
         return ""
 
+
 def build_row(no, t, tenor):
 
     order_value = tenor.nomor_kontrak if tenor.nomor_kontrak else ""
@@ -447,7 +455,8 @@ def build_row(no, t, tenor):
 
     row = [
         no,
-        t.tanggal_pengaduan.strftime("%Y-%m-%d") if t.tanggal_pengaduan else "",
+        t.tanggal_pengaduan.strftime(
+            "%Y-%m-%d") if t.tanggal_pengaduan else "",
         t.pic_handle.name,
         t.email,
         t.nama,
@@ -470,6 +479,7 @@ def build_row(no, t, tenor):
 
     return row
 
+
 @app.route("/export-google-sheet")
 def export_google_sheet_route():
     try:
@@ -478,9 +488,10 @@ def export_google_sheet_route():
     except Exception as e:
         flash(f"Export gagal: {str(e)}", "danger")
 
-    return redirect(url_for("dashboard")) 
+    return redirect(url_for("dashboard"))
 
 ##### Export to Google Sheets #####
+
 
 @app.route('/')
 def index():
@@ -504,9 +515,11 @@ def login():
 
     return render_template('login.html')
 
+
 jakarta_tz = pytz.timezone('Asia/Jakarta')
 now_id = datetime.now(jakarta_tz)
 current_year = now_id.year
+
 
 @app.route('/dashboard')
 @login_required
@@ -566,7 +579,7 @@ def dashboard():
                 'ticket': ticket,
                 'sla_end_date': sla_end_date
             })
-        
+
         rows = (
             db.session.query(
                 extract('month', Ticket.tanggal_pengaduan).label('bulan'),
@@ -582,7 +595,8 @@ def dashboard():
         for bulan, jumlah in rows:
             month_counts[int(bulan) - 1] = int(jumlah)
 
-        month_labels = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
+        month_labels = ["Jan", "Feb", "Mar", "Apr", "May",
+                        "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 
         products = Product.query.all()
 
@@ -676,7 +690,7 @@ def dashboard():
 
         tickets_paginated = query.order_by(Ticket.id.desc()).paginate(
             page=page, per_page=5, error_out=False)
-        
+
         products = Product.query.all()
 
         return render_template(
@@ -708,6 +722,7 @@ def logout():
     return redirect(url_for('login'))
 
 ##### User Management Routes #####
+
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -1093,9 +1108,10 @@ def create_tickets():
         return redirect(url_for('dashboard'))
 
     if request.method == 'POST':
+
         tanggal_pengaduan_str = request.form.get('tanggalPengaduan')
         if not tanggal_pengaduan_str:
-            flash('Tanggal_pengaduan harus diisi.', 'danger')
+            flash('Tanggal pengaduan harus diisi.', 'danger')
             products_for_template = Product.query.all()
             return render_template('create_ticket.html', user=current_user, products=products_for_template)
 
@@ -1119,11 +1135,22 @@ def create_tickets():
 
         order_number_raw = request.form.get('orderNumber')
         order_number = None
+        order_numbers_list = []
+
         if order_number_raw:
-            order_numbers_list = [num.strip()
-                                  for num in order_number_raw.split(',')]
-            order_numbers_list = [num for num in order_numbers_list if num]
-            order_number = ','.join(order_numbers_list)
+            order_numbers_list = [
+                num.strip() for num in order_number_raw.split(',') if num.strip()]
+            order_number = ",".join(order_numbers_list)
+
+        nominal_list = request.form.getlist('nominalOrder[]')
+        nominal_list = [n.strip() for n in nominal_list if n.strip()]
+
+        nominal_order = ",".join(nominal_list)
+
+        if len(order_numbers_list) != len(nominal_list):
+            flash("Jumlah Nominal harus sama dengan jumlah Order Number.", "danger")
+            products_for_template = Product.query.all()
+            return render_template('create_ticket.html', user=current_user, products=products_for_template)
 
         pic_handle_id = current_user.id
         kanal_pengaduan = request.form.get('kanalPengaduan')
@@ -1144,10 +1171,12 @@ def create_tickets():
 
         if not product:
             product = Product.query.filter_by(
-                complaint_type=tipe_pengaduan, complaint_detail=detail_pengaduan).first()
+                complaint_type=tipe_pengaduan,
+                complaint_detail=detail_pengaduan
+            ).first()
 
         if not product:
-            flash('Product tidak ditemukan untuk tipe dan detail yang dipilih.', 'danger')
+            flash('Product tidak ditemukan untuk tipe & detail pengaduan.', 'danger')
             products_for_template = Product.query.all()
             return render_template('create_ticket.html', user=current_user, products=products_for_template)
 
@@ -1160,6 +1189,7 @@ def create_tickets():
             phone_aktif=phone_aktif,
             email=email,
             order_number=order_number,
+            nominal_order=nominal_order,
             pic_handle_id=pic_handle_id,
             product_id=product.id,
             status=status,
@@ -1182,8 +1212,8 @@ def create_tickets():
             return render_template('create_ticket.html', user=current_user, products=products_for_template)
 
     products = Product.query.all()
-
     grouped_details = {}
+
     for product in products:
         details_list = [detail.strip()
                         for detail in product.complaint_detail.split(',')]
@@ -1193,7 +1223,12 @@ def create_tickets():
             if detail not in grouped_details[product.complaint_type]:
                 grouped_details[product.complaint_type].append(detail)
 
-    return render_template('create_ticket.html', user=current_user, products=products, grouped_details=grouped_details)
+    return render_template(
+        'create_ticket.html',
+        user=current_user,
+        products=products,
+        grouped_details=grouped_details
+    )
 
 
 @app.route('/case-open', methods=['GET'])
@@ -1227,7 +1262,8 @@ def case_collection():
     page = request.args.get('page', 1, type=int)
     search_query = request.args.get('search', '', type=str)
 
-    query = Ticket.query.filter_by(case_progress=2).filter(Ticket.status != '3')
+    query = Ticket.query.filter_by(
+        case_progress=2).filter(Ticket.status != '3')
 
     if search_query:
         query = query.filter(
@@ -1244,6 +1280,7 @@ def case_collection():
     open_tickets = pagination.items
 
     return render_template('case_collection.html', user=current_user, tickets=open_tickets, pagination=pagination, search_query=search_query)
+
 
 @app.route('/case-collection-close', methods=['GET'])
 @login_required
@@ -1269,6 +1306,7 @@ def case_collection_close():
 
     return render_template('case_collection_close.html', user=current_user, tickets=open_tickets, pagination=pagination, search_query=search_query)
 
+
 @app.route('/case-detail-collection/<int:ticket_id>')
 @login_required
 def case_detail_collection(ticket_id):
@@ -1283,10 +1321,22 @@ def case_detail_collection(ticket_id):
 
     tenor_by_kontrak = {(t.nomor_kontrak or '').strip(): t for t in tenors}
 
-    order_numbers_list = [s.strip() for s in (
-        ticket.order_number or '').split(',') if s.strip()]
+    order_numbers_list = [
+        s.strip() for s in (ticket.order_number or '').split(',')
+        if s.strip()
+    ]
 
-    kontrak_items = []
+    nominal_list = [
+        n.strip() for n in (ticket.nominal_order or '').split(',')
+        if n.strip()
+    ]
+
+    def format_rupiah(number_str):
+        try:
+            amount = int(float(number_str))
+            return f"Rp {amount:,.0f}".replace(",", ".")
+        except:
+            return number_str
 
     def is_nullish(v):
         if v is None:
@@ -1295,12 +1345,21 @@ def case_detail_collection(ticket_id):
             return True
         return False
 
-    for onum in order_numbers_list:
+    kontrak_items = []
+
+    for idx, onum in enumerate(order_numbers_list):
+
+        nominal_value = nominal_list[idx] if idx < len(nominal_list) else None
+        nominal_formatted = (
+            format_rupiah(nominal_value) if nominal_value else None
+        )
+
         t = tenor_by_kontrak.get(onum)
         if not t:
             continue
 
         slots_valid = []
+
         for i in range(1, 13):
             tenor_val = getattr(t, f'tenor_{i}', None)
             if is_nullish(tenor_val):
@@ -1315,16 +1374,23 @@ def case_detail_collection(ticket_id):
                 "nominal": nominal_num,
             })
 
-        tenor_lunas_list = [ {**s, "is_lunas": True} for s in slots_valid if s["nominal"] <= 0 ]
-        tenor_aktif_list = [ s for s in slots_valid if s["nominal"] > 0 ]
+        tenor_lunas_list = [
+            {**s, "is_lunas": True}
+            for s in slots_valid if s["nominal"] <= 0
+        ]
+        tenor_aktif_list = [
+            s for s in slots_valid if s["nominal"] > 0
+        ]
 
         lunas_count = len(tenor_lunas_list)
-        sisa_count  = len(tenor_aktif_list)
+        sisa_count = len(tenor_aktif_list)
 
-        nominal_satuan = next((s["nominal"] for s in tenor_aktif_list if s["nominal"] > 0), 0.0)
+        nominal_satuan = next(
+            (s["nominal"] for s in tenor_aktif_list if s["nominal"] > 0),
+            0.0
+        )
 
         total_nominal_akhir = float(t.total_nominal_akhir or 0)
-
         total_tenor_lunas_amount = lunas_count * nominal_satuan
 
         tenor_aktif_first = tenor_aktif_list[0] if tenor_aktif_list else None
@@ -1341,6 +1407,7 @@ def case_detail_collection(ticket_id):
 
         kontrak_items.append({
             "order_number": onum,
+            "nominal": nominal_formatted,
             "tenor_id": t.id,
             "tenor_lunas_list": tenor_lunas_list,
             "tenor_aktif_first": tenor_aktif_first,
@@ -1354,7 +1421,6 @@ def case_detail_collection(ticket_id):
             "total_tenor_lunas_amount": total_tenor_lunas_amount,
         })
 
-
     return render_template(
         'case_detail_collection.html',
         ticket=ticket,
@@ -1367,6 +1433,7 @@ def case_detail_collection(ticket_id):
         kontrak_items=kontrak_items,
         order_numbers_list=order_numbers_list
     )
+
 
 @app.route("/tenor/lunas/<int:tenor_id>/<int:no>", methods=["POST"])
 @login_required
@@ -1459,17 +1526,32 @@ def ticket_detail(ticket_id):
     docs2_files = Docs2.query.filter_by(ticket_id=ticket.id).all()
 
     tenors = Tenor.query.filter_by(ticket_id=ticket.id).all()
-
     tenor_by_kontrak = {(t.nomor_kontrak or '').strip(): t for t in tenors}
 
     order_numbers_list = [s.strip() for s in (
         ticket.order_number or '').split(',') if s.strip()]
 
+    nominal_list = [n.strip() for n in (
+        ticket.nominal_order or '').split(',') if n.strip()]
+
+    def format_rupiah(number_str):
+        try:
+            amount = int(number_str)
+            return f"Rp {amount:,.0f}".replace(",", ".")
+        except:
+            return number_str
+
     kontrak_items = []
-    for onum in order_numbers_list:
+    for idx, onum in enumerate(order_numbers_list):
         t = tenor_by_kontrak.get(onum)
+
+        nominal_value = nominal_list[idx] if idx < len(nominal_list) else None
+        nominal_formatted = format_rupiah(
+            nominal_value) if nominal_value else None
+
         kontrak_items.append({
             'order_number': onum,
+            'nominal': nominal_formatted,
             'tenor_id': t.id if t else None
         })
 
@@ -1730,6 +1812,7 @@ def add_months(source_date, months):
     day = min(source_date.day, calendar.monthrange(year, month)[1])
     return source_date.replace(year=year, month=month, day=day)
 
+
 @app.route('/view-kontrak/<int:id>', methods=['GET'])
 @login_required
 def view_kontrak(id):
@@ -1755,16 +1838,16 @@ def view_kontrak(id):
         for i in range(1, 13):
             if (getattr(t, f'tenor_{i}', None) is not None and
                 getattr(t, f'nominal_tenor_{i}', None) is not None and
-                getattr(t, f'ovd_{i}', None) is not None):
+                    getattr(t, f'ovd_{i}', None) is not None):
                 jumlah_tenor_aktif = i
             else:
                 break
         row['jumlah_tenor_aktif'] = jumlah_tenor_aktif
 
         for i in range(1, 13):
-            tenor_i  = getattr(t, f'tenor_{i}', None)
+            tenor_i = getattr(t, f'tenor_{i}', None)
             nominal_i = getattr(t, f'nominal_tenor_{i}', None)
-            ovd_i     = getattr(t, f'ovd_{i}', None)
+            ovd_i = getattr(t, f'ovd_{i}', None)
 
             if tenor_i is not None and nominal_i is not None and ovd_i is not None:
                 row['cicilan'].append({
@@ -1798,6 +1881,7 @@ def format_rupiah_id(n):
 def fmt_tgl(d):
     return d.strftime("%d/%m/%Y") if d else ''
 
+
 @app.route('/view-all-kontrak/<int:ticket_id>', methods=['GET'])
 @login_required
 def view_all_kontrak(ticket_id):
@@ -1814,10 +1898,12 @@ def view_all_kontrak(ticket_id):
         BROWN = "8B4513"
         fill_head = PatternFill("solid", fgColor=ORANGE)
         font_head = Font(bold=True)
-        align_center = Alignment(horizontal="center", vertical="center", wrap_text=True)
+        align_center = Alignment(
+            horizontal="center", vertical="center", wrap_text=True)
         align_right = Alignment(horizontal="right", vertical="center")
         side_thin = Side(border_style="thin", color=BROWN)
-        border_all = Border(left=side_thin, right=side_thin, top=side_thin, bottom=side_thin)
+        border_all = Border(left=side_thin, right=side_thin,
+                            top=side_thin, bottom=side_thin)
         nf_money = u'\"Rp\"#,##0'
         nf_date = "DD/MM/YYYY"
 
@@ -1856,7 +1942,8 @@ def view_all_kontrak(ticket_id):
 
             ws.merge_cells(start_row=row_cursor, start_column=1,
                            end_row=row_cursor + total_rows - 1, end_column=1)
-            a = ws.cell(row=row_cursor, column=1, value=f"Nomor Kontrak\n\n{nomor}")
+            a = ws.cell(row=row_cursor, column=1,
+                        value=f"Nomor Kontrak\n\n{nomor}")
             a.fill = fill_head
             a.font = font_head
             a.alignment = align_center
@@ -1870,15 +1957,18 @@ def view_all_kontrak(ticket_id):
                     cicil_no = (g * 3) + k + 1
                     ws.merge_cells(start_row=base_r, start_column=base_c + (k * 2),
                                    end_row=base_r, end_column=base_c + (k * 2) + 1)
-                    ch = ws.cell(row=base_r, column=base_c + (k * 2), value=f"Cicilan ke {cicil_no}")
+                    ch = ws.cell(row=base_r, column=base_c +
+                                 (k * 2), value=f"Cicilan ke {cicil_no}")
                     ch.fill = fill_head
                     ch.font = font_head
                     ch.alignment = align_center
                     ch.border = border_all
 
                 for k in range(3):
-                    h1 = ws.cell(row=base_r + 1, column=base_c + (k * 2), value="Tanggal Jatuh Tempo")
-                    h2 = ws.cell(row=base_r + 1, column=base_c + (k * 2) + 1, value="Nominal")
+                    h1 = ws.cell(row=base_r + 1, column=base_c +
+                                 (k * 2), value="Tanggal Jatuh Tempo")
+                    h2 = ws.cell(row=base_r + 1, column=base_c +
+                                 (k * 2) + 1, value="Nominal")
                     for cc in (h1, h2):
                         cc.fill = fill_head
                         cc.font = font_head
@@ -1888,7 +1978,8 @@ def view_all_kontrak(ticket_id):
                 for k in range(3):
                     idx = g * 3 + k
                     c_tgl = ws.cell(row=base_r + 2, column=base_c + (k * 2))
-                    c_nom = ws.cell(row=base_r + 2, column=base_c + (k * 2) + 1)
+                    c_nom = ws.cell(
+                        row=base_r + 2, column=base_c + (k * 2) + 1)
                     if idx < n and items[idx]["tgl"]:
                         c_tgl.value = items[idx]["tgl"]
                         c_tgl.number_format = nf_date
@@ -1912,14 +2003,17 @@ def view_all_kontrak(ticket_id):
             label_top = row_cursor
             label_bottom = row_cursor + total_rows - 2
             value_row = row_cursor + total_rows - 1
-            ws.merge_cells(start_row=label_top, start_column=8, end_row=label_bottom, end_column=8)
-            lab = ws.cell(row=label_top, column=8, value="Total nominal pengembalian")
+            ws.merge_cells(start_row=label_top, start_column=8,
+                           end_row=label_bottom, end_column=8)
+            lab = ws.cell(row=label_top, column=8,
+                          value="Total nominal pengembalian")
             lab.fill = fill_head
             lab.font = font_head
             lab.alignment = align_center
             lab.border = border_all
 
-            total_akhir = float(t.total_nominal_akhir) if t.total_nominal_akhir is not None else None
+            total_akhir = float(
+                t.total_nominal_akhir) if t.total_nominal_akhir is not None else None
             val = ws.cell(row=value_row, column=8)
             if total_akhir is not None:
                 val.value = total_akhir
@@ -1970,8 +2064,10 @@ def view_all_kontrak(ticket_id):
                 nom_str = "-"
             cicilan.append({"tgl": tgl_str, "nom": nom_str})
 
-        total_display = format_rupiah_id(float(t.total_nominal)) if t.total_nominal else "-"
-        total_akhir_display = format_rupiah_id(float(t.total_nominal_akhir)) if t.total_nominal_akhir else "-"
+        total_display = format_rupiah_id(
+            float(t.total_nominal)) if t.total_nominal else "-"
+        total_akhir_display = format_rupiah_id(
+            float(t.total_nominal_akhir)) if t.total_nominal_akhir else "-"
 
         rows.append({
             "nomor_kontrak": (t.nomor_kontrak or "").strip(),
@@ -1988,6 +2084,7 @@ def view_all_kontrak(ticket_id):
         max_tenor_aktif=max_tenor_aktif
     )
 
+
 def sla_class(sla: int | None) -> str:
     if sla is None:
         return "!text-default-400"
@@ -1997,8 +2094,10 @@ def sla_class(sla: int | None) -> str:
         return "!text-info"
     return "!text-danger"
 
+
 def ovd_class(_):
     return "!text-danger text-center"
+
 
 @app.route('/api/calendar-events', methods=['GET'])
 @login_required
@@ -2027,6 +2126,7 @@ def api_calendar_events():
 
     return jsonify(events)
 
+
 @app.route('/api/calendar-ovd', methods=['GET'])
 @login_required
 def api_calendar_ovd():
@@ -2043,20 +2143,23 @@ def api_calendar_ovd():
                     "start": ovd_value.strftime("%Y-%m-%d"),
                     "nomor_kontrak": tenor.nomor_kontrak,
                     "tenor": f"Tenor ke-{i}",
-                    "className":ovd_class(ovd_value)
+                    "className": ovd_class(ovd_value)
                 })
 
     return jsonify(events)
+
 
 @app.route('/calendar', methods=['GET'])
 @login_required
 def calendar_view():
     return render_template('calendar.html', user=current_user)
 
+
 @app.route('/calendar-ovd', methods=['GET'])
 @login_required
 def calendar_ovd():
     return render_template('calendar_ovd.html', user=current_user)
+
 
 @app.route('/close/<int:id>', methods=['POST'])
 @login_required
@@ -2073,6 +2176,7 @@ def close(id):
         f"Case #{ticket.no_ticket} telah ditutup oleh {current_user.name}.", "success")
     return redirect(url_for('ticket_detail', ticket_id=id))
 
+
 @app.route('/move-case/<int:id>', methods=['POST'])
 @login_required
 def move_case(id):
@@ -2088,11 +2192,13 @@ def move_case(id):
     flash(f"Case #{ticket.no_ticket} move by {current_user.name}.", "success")
     return redirect(url_for('ticket_detail', ticket_id=id))
 
+
 @app.route('/chat')
 @login_required
 def chat():
     users = User.query.filter(User.id != current_user.id).all()
     return render_template('chat.html', user=current_user, users=users)
+
 
 @app.route('/chat/<int:user_id>')
 @login_required
@@ -2129,16 +2235,19 @@ def send_message():
     if not receiver_id or not message_text:
         return jsonify({'error': 'Missing fields'}), 400
 
-    message = Message(sender_id=current_user.id, receiver_id=receiver_id, message=message_text)
+    message = Message(sender_id=current_user.id,
+                      receiver_id=receiver_id, message=message_text)
     db.session.add(message)
     db.session.commit()
 
     return jsonify({'success': True, 'timestamp': message.timestamp.strftime('%H:%M')})
 
+
 @app.route('/download-template')
 def download_template():
-    
+
     return send_from_directory(directory='static/files', path='template.xlsx', as_attachment=True)
+
 
 @app.route('/import-tickets', methods=['POST'])
 def import_tickets():
@@ -2193,7 +2302,8 @@ def import_tickets():
                 phone_pengajuan=str(row['nomor_pengajuan']).strip(),
                 phone_aktif=str(row['nomor_aktif']).strip(),
                 email=row['email'],
-                order_number=str(row['order_number']) if pd.notna(row['order_number']) else None,
+                order_number=str(row['order_number']) if pd.notna(
+                    row['order_number']) else None,
                 pic_handle_id=current_user.id,
                 product_id=product_id,
                 kanal_pengaduan=row['kanal_pengaduan'],
@@ -2215,13 +2325,14 @@ def import_tickets():
 
     return redirect(request.referrer)
 
+
 @app.before_request
 def create_tables_if_not_exists():
     if not hasattr(g, 'tables_created'):
         db.create_all()
         g.tables_created = True
 
-import logging
+
 log = logging.getLogger('werkzeug')
 log.setLevel(logging.WARNING)
 

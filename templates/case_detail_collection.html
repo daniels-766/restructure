@@ -273,7 +273,8 @@
                         </div>
 
                         <!-- Notification Button -->
-                        <div class="topbar-item hs-dropdown [--auto-close:inside] relative inline-flex" style="display: none;">
+                        <div class="topbar-item hs-dropdown [--auto-close:inside] relative inline-flex"
+                            style="display: none;">
                             <button type="button"
                                 class="hs-dropdown-toggle btn btn-icon size-8 hover:bg-default-150 rounded-full relative"
                                 aria-haspopup="menu" aria-expanded="false" aria-label="Dropdown">
@@ -624,7 +625,7 @@
                                 <div class="border-t border-t-default-200 -mx-2 my-2"></div>
 
                                 <div class="flex flex-col gap-y-1">
-                                    
+
 
                                     <div class="border-t border-default-200 -mx-2 my-1"></div>
 
@@ -849,6 +850,9 @@
                                                     <a
                                                         class="transition-all duration-300 ease-linear hover:text-primary">
                                                         {{ loop.index }}. {{ item.order_number }}
+                                                        {% if item.nominal %}
+                                                        ⇒ <b>{{ item.nominal }}</b>
+                                                        {% endif %}
                                                     </a>
                                                 </h6>
                                             </div>
@@ -1560,8 +1564,7 @@
                         <script>document.write(new Date().getFullYear())</script> © Uatas
                     </div>
                     <div class="md:flex hidden gap-2 item-center md:justify-end">
-                         Develop by<a href="https://uatas.id" target="_blank"
-                            class="text-primary">Uatas</a>
+                        Develop by<a href="https://uatas.id" target="_blank" class="text-primary">Uatas</a>
                     </div>
                 </div>
             </footer>
