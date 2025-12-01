@@ -2110,6 +2110,9 @@ def api_calendar_events():
 
         if t.status == 3:
             continue
+        
+        if t.case_progress != 1:
+            continue
 
         sla_days = t.sla or 0
 
