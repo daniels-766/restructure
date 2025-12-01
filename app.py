@@ -2107,6 +2107,10 @@ def api_calendar_events():
 
     events = []
     for t in tickets:
+
+        if t.status == 3:
+            continue
+
         sla_days = t.sla or 0
 
         if sla_days <= 0:
@@ -2134,6 +2138,10 @@ def api_calendar_ovd():
     events = []
 
     for tenor in tenors:
+
+        if tenor.ticket and tenor.ticket.status == 3:
+            continue
+
         for i in range(1, 13):
             ovd_value = getattr(tenor, f"ovd_{i}")
             if ovd_value:
@@ -2147,7 +2155,6 @@ def api_calendar_ovd():
                 })
 
     return jsonify(events)
-
 
 @app.route('/calendar', methods=['GET'])
 @login_required
