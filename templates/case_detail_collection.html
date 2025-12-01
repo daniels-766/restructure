@@ -2434,30 +2434,44 @@
         document.addEventListener('DOMContentLoaded', function () {
             const select = document.getElementById('orderSelect');
             const blocks = document.querySelectorAll('.kontrak-block');
-            function showSelected(order) { blocks.forEach(el => el.classList.toggle('hidden', el.dataset.order !== order)); }
+
+            function showSelected(order) {
+                blocks.forEach(el => el.classList.toggle('hidden', el.dataset.order !== order));
+            }
+
             if (select && select.value) showSelected(select.value);
             select?.addEventListener('change', function () { showSelected(this.value); });
 
+            // --- HANDLE BUTTON LUNAS ---
             document.body.addEventListener('click', async (e) => {
                 const btn = e.target.closest('.btn-lunas');
                 if (!btn) return;
 
-                btn.disabled = true;
-                const tenorId = btn.dataset.tenorId;
+                // ==========================================
+                // 👉 Popup Confirm
+                // ==========================================
                 const tenorNo = btn.dataset.tenorNo;
+                const isConfirmed = confirm(`Apakah Anda yakin tenor ke-${tenorNo} ini sudah LUNAS?`);
+                if (!isConfirmed) return; // batal
+                // ==========================================
+
+                btn.disabled = true;
+
+                const tenorId = btn.dataset.tenorId;
 
                 try {
                     const res = await fetch(`/tenor/lunas/${tenorId}/${tenorNo}`, { method: 'POST' });
                     const json = await res.json();
+
                     if (!json.ok) throw new Error(json.error || 'Gagal update');
 
-                    // 👉 langsung redirect; flash sudah diset di server
+                    // Redirect dari server
                     if (json.redirect_url) {
                         window.location.href = json.redirect_url;
                         return;
                     }
 
-                    // fallback (kalau tak ada redirect_url):
+                    // Fallback
                     window.location.reload();
 
                 } catch (err) {
@@ -2468,6 +2482,7 @@
             });
         });
     </script>
+
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const select = document.getElementById('orderSelect');
