@@ -2145,6 +2145,9 @@ def api_calendar_ovd():
         if tenor.ticket and tenor.ticket.status == 3:
             continue
 
+        if tenor.ticket and tenor.ticket.case_progress != 2:
+            continue
+
         for i in range(1, 13):
             ovd_value = getattr(tenor, f"ovd_{i}")
             if ovd_value:
