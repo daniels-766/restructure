@@ -335,32 +335,28 @@ def generate_staff_id():
 
 
 def generate_ticket_number():
-    """Generate a unique ticket number in format UATASddmmyyNN"""
+    """Generate a unique ticket number in format UATASddmmyyNNN"""
     jakarta_tz = pytz.timezone('Asia/Jakarta')
     now = datetime.now(jakarta_tz)
     date_str = now.strftime('%d%m%y')
 
-    pattern = f"^UATAS{date_str}\\d{{2}}$"
+    pattern = f"^UATAS{date_str}\\d{{3}}$"
+
     last_ticket_today = Ticket.query.filter(
         Ticket.no_ticket.op('REGEXP')(pattern)
     ).order_by(
-        db.func.cast(db.func.substring(
-            Ticket.no_ticket, -2), db.Integer).desc()
+        db.func.cast(
+            db.func.substring(Ticket.no_ticket, -3), db.Integer
+        ).desc()
     ).first()
 
     if last_ticket_today:
-        last_num_str = last_ticket_today.no_ticket[-2:]
-        try:
-            last_num = int(last_num_str)
-            new_num = last_num + 1
-        except ValueError:
-            new_num = 1
+        last_num = int(last_ticket_today.no_ticket[-3:])
+        new_num = last_num + 1
     else:
         new_num = 1
 
-    new_num_str = f"{new_num:02d}"
-    return f"UATAS{date_str}{new_num_str}"
-
+    return f"UATAS{date_str}{new_num:03d}"
 
 def reduce_sla_daily():
     with app.app_context():
