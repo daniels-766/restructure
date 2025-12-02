@@ -1173,52 +1173,94 @@
                             </div>
                         </div>
                         <div class="card-footer flex justify-between items-center">
-                            <p class="text-default-500 text-sm">
-                                Showing <b>{{ tickets.page }}</b> of <b>{{ tickets.pages }}</b> pages
-                                (Total: {{ tickets.total }} tickets)
-                            </p>
+    <p class="text-default-500 text-sm">
+        Showing <b>{{ tickets.page }}</b> of <b>{{ tickets.pages }}</b> pages
+        (Total: {{ tickets.total }} tickets)
+    </p>
 
-                            <nav class="flex items-center gap-2" aria-label="Pagination">
-                                {# Tombol Prev #}
-                                {% if tickets.has_prev %}
-                                <a href="{{ url_for('dashboard', page=tickets.prev_num, search=search, status=status) }}"
-                                    class="btn btn-sm border bg-transparent border-default-200 text-default-600 hover:bg-primary/10 hover:text-primary hover:border-primary/10">
-                                    <i data-lucide="chevron-left" class="size-4 me-1"></i> Prev
-                                </a>
-                                {% else %}
-                                <button disabled
-                                    class="btn btn-sm border border-default-200 text-default-400 cursor-not-allowed">
-                                    <i data-lucide="chevron-left" class="size-4 me-1"></i> Prev
-                                </button>
-                                {% endif %}
+    <nav class="flex items-center gap-2" aria-label="Pagination">
 
-                                {# Tombol Nomor Halaman #}
-                                {% for page_num in range(1, tickets.pages + 1) %}
-                                {% if page_num == tickets.page %}
-                                <span class="btn size-7.5 bg-primary text-white">{{ page_num }}</span>
-                                {% else %}
-                                <a href="{{ url_for('dashboard', page=page_num, search=search, status=status) }}"
-                                    class="btn size-7.5 bg-transparent border border-default-200 text-default-600 hover:bg-primary/10 hover:text-primary hover:border-primary/10">
-                                    {{ page_num }}
-                                </a>
-                                {% endif %}
-                                {% endfor %}
+        {# ===== PREV BUTTON ===== #}
+        {% if tickets.has_prev %}
+            <a href="{{ url_for('dashboard', page=tickets.prev_num, search=search, status=status) }}"
+               class="btn btn-sm border bg-transparent border-default-200 text-default-600 hover:bg-primary/10 hover:text-primary hover:border-primary/10">
+                <i data-lucide="chevron-left" class="size-4 me-1"></i> Prev
+            </a>
+        {% else %}
+            <button disabled
+                class="btn btn-sm border border-default-200 text-default-400 cursor-not-allowed">
+                <i data-lucide="chevron-left" class="size-4 me-1"></i> Prev
+            </button>
+        {% endif %}
 
-                                {# Tombol Next #}
-                                {% if tickets.has_next %}
-                                <a href="{{ url_for('dashboard', page=tickets.next_num, search=search, status=status) }}"
-                                    class="btn btn-sm border bg-transparent border-default-200 text-default-600 hover:bg-primary/10 hover:text-primary hover:border-primary/10">
-                                    Next <i data-lucide="chevron-right" class="size-4 ms-1"></i>
-                                </a>
-                                {% else %}
-                                <button disabled
-                                    class="btn btn-sm border border-default-200 text-default-400 cursor-not-allowed">
-                                    Next <i data-lucide="chevron-right" class="size-4 ms-1"></i>
-                                </button>
-                                {% endif %}
 
-                            </nav>
-                        </div>
+        {# ===== ALWAYS SHOW PAGE 1 ===== #}
+        {% if tickets.page == 1 %}
+            <span class="btn size-7.5 bg-primary text-white">1</span>
+        {% else %}
+            <a href="{{ url_for('dashboard', page=1, search=search, status=status) }}"
+               class="btn size-7.5 bg-transparent border border-default-200 text-default-600 hover:bg-primary/10 hover:text-primary hover:border-primary/10">
+                1
+            </a>
+        {% endif %}
+
+
+        {# ===== LEFT ELLIPSIS ===== #}
+        {% if tickets.page > 3 %}
+            <span class="btn size-7.5 border border-default-200 text-default-500">...</span>
+        {% endif %}
+
+
+        {# ===== MIDDLE PAGES: current-1, current, current+1 ===== #}
+        {% for p in range(tickets.page - 1, tickets.page + 2) %}
+            {% if p > 1 and p < tickets.pages %}
+                {% if p == tickets.page %}
+                    <span class="btn size-7.5 bg-primary text-white">{{ p }}</span>
+                {% else %}
+                    <a href="{{ url_for('dashboard', page=p, search=search, status=status) }}"
+                       class="btn size-7.5 bg-transparent border border-default-200 text-default-600 hover:bg-primary/10 hover:text-primary hover:border-primary/10">
+                        {{ p }}
+                    </a>
+                {% endif %}
+            {% endif %}
+        {% endfor %}
+
+
+        {# ===== RIGHT ELLIPSIS ===== #}
+        {% if tickets.page < tickets.pages - 2 %}
+            <span class="btn size-7.5 border border-default-200 text-default-500">...</span>
+        {% endif %}
+
+
+        {# ===== ALWAYS SHOW LAST PAGE ===== #}
+        {% if tickets.pages > 1 %}
+            {% if tickets.page == tickets.pages %}
+                <span class="btn size-7.5 bg-primary text-white">{{ tickets.pages }}</span>
+            {% else %}
+                <a href="{{ url_for('dashboard', page=tickets.pages, search=search, status=status) }}"
+                   class="btn size-7.5 bg-transparent border border-default-200 text-default-600 hover:bg-primary/10 hover:text-primary hover:border-primary/10">
+                    {{ tickets.pages }}
+                </a>
+            {% endif %}
+        {% endif %}
+
+
+        {# ===== NEXT BUTTON ===== #}
+        {% if tickets.has_next %}
+            <a href="{{ url_for('dashboard', page=tickets.next_num, search=search, status=status) }}"
+               class="btn btn-sm border bg-transparent border-default-200 text-default-600 hover:bg-primary/10 hover:text-primary hover:border-primary/10">
+                Next <i data-lucide="chevron-right" class="size-4 ms-1"></i>
+            </a>
+        {% else %}
+            <button disabled
+                class="btn btn-sm border border-default-200 text-default-400 cursor-not-allowed">
+                Next <i data-lucide="chevron-right" class="size-4 ms-1"></i>
+            </button>
+        {% endif %}
+
+    </nav>
+</div>
+
 
                     </div>
                 </div>
