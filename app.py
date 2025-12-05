@@ -2341,6 +2341,71 @@ def create_tables_if_not_exists():
         db.create_all()
         g.tables_created = True
 
+@app.route('/export-ticket', methods=['POST'])
+def export_ticket():
+    start_date = request.form.get('start_date')
+    end_date = request.form.get('end_date')
+
+    if not start_date or not end_date:
+        flash("Start Date dan End Date wajib diisi.", "danger")
+        return redirect(url_for('dashboard'))
+
+    try:
+        start_date_dt = datetime.strptime(start_date, "%Y-%m-%d")
+        end_date_dt = datetime.strptime(end_date, "%Y-%m-%d")
+
+        end_date_dt = end_date_dt.replace(hour=23, minute=59, second=59)
+    except Exception as e:
+        flash("Format tanggal tidak valid.", "danger")
+        return redirect(url_for('dashboard'))
+
+    tickets = Ticket.query.filter(
+        Ticket.tanggal_pengaduan >= start_date_dt,
+        Ticket.tanggal_pengaduan <= end_date_dt
+    ).all()
+
+    if not tickets:
+        flash("Tidak ada data pada range tersebut.", "warning")
+        return redirect(url_for('dashboard'))
+
+    data = []
+
+    status_map = {
+        1: "Open",
+        2: "On Progress",
+        3: "Close"
+    }
+
+    for t in tickets:
+        data.append({
+            "No Ticket": t.no_ticket,
+            "Tanggal Tiket Masuk": t.tanggal_pengaduan,
+            "Nama Nasabah": t.nama,
+            "Nomor Nasabah": t.phone_pengajuan,
+            "Email": t.email,
+            "Order Number": t.order_number,
+            "PIC": t.pic_handle.name if t.pic_handle else "-",
+            "Detail Problem": t.detail_problem,
+            "Tipe Pengaduan": t.product.complaint_type if t.product else "",
+            "Kanal Pengaduan": t.kanal_pengaduan,
+            "Detail Pengaduan": t.detail_pengaduan,
+            "Status": status_map.get(t.status, "Unknown"),
+        })
+
+
+    df = pd.DataFrame(data)
+
+    output = BytesIO()
+    df.to_excel(output, index=False)
+    output.seek(0)
+
+    filename = f"export_ticket_{start_date}_to_{end_date}.xlsx"
+
+    return send_file(output,
+                     download_name=filename,
+                     as_attachment=True,
+                     mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+
 
 log = logging.getLogger('werkzeug')
 log.setLevel(logging.WARNING)
