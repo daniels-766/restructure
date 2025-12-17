@@ -35,6 +35,18 @@
                         </a>
                     </li>
 
+                    <li class="menu-item">
+                        <a href="{{ url_for('collection_template') }}" class="menu-link">
+                            <span class="menu-text"> Collection Template </span>
+                        </a>
+                    </li>
+
+                    <li class="menu-item">
+                        <a href="{{ url_for('reply_template') }}" class="menu-link">
+                            <span class="menu-text"> Reply Template </span>
+                        </a>
+                    </li>
+
                     <!-- <li class="menu-item">
                         <a href="product-landing.html" target="_blank" class="menu-link">
                             <span class="menu-text"> Account Setting </span>
@@ -145,6 +157,29 @@
                     </li>
                 </ul>
             </li>
+            
+            {% if user.role == 'Staff' %}
+            <li class="menu-item hs-accordion">
+                <a href="javascript:void(0)" class="hs-accordion-toggle menu-link">
+                    <span class="menu-icon"><i data-lucide="calendar-1"></i></span>
+                    <span class="menu-text"> Template </span>
+                    <span class="menu-arrow"></span>
+                </a>
+
+                <ul class="sub-menu hs-accordion-content hidden">
+                    <li class="menu-item">
+                        <a href="{{ url_for('collection_template') }}" class="menu-link">
+                            <span class="menu-text">Collection Template</span>
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="{{ url_for('reply_template') }}" class="menu-link">
+                            <span class="menu-text">Reply Template</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            {% endif %}
         </ul>
     </div>
 </div>

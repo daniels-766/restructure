@@ -83,6 +83,35 @@ class Product(db.Model):
     def __repr__(self):
         return f'<Product {self.complaint_type}>'
 
+class CollectionTemplate(db.Model):
+    __tablename__ = 'collection_templates'
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(200), nullable=False)
+    detail = db.Column(db.Text, nullable=False)
+    status = db.Column(db.Integer, nullable=False, default=1)
+    created_at = db.Column(db.DateTime, nullable=False,
+                           default=lambda: get_jakarta_time())
+    updated_at = db.Column(db.DateTime, nullable=False,
+                           default=lambda: get_jakarta_time(),
+                           onupdate=lambda: get_jakarta_time())
+
+    def __repr__(self):
+        return f'<CollectionTemplate {self.title}>'
+
+class ReplyTemplate(db.Model):
+    __tablename__ = 'reply_templates'
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(200), nullable=False)
+    detail = db.Column(db.Text, nullable=False)
+    status = db.Column(db.Integer, nullable=False, default=1)
+    created_at = db.Column(db.DateTime, nullable=False,
+                           default=lambda: get_jakarta_time())
+    updated_at = db.Column(db.DateTime, nullable=False,
+                           default=lambda: get_jakarta_time(),
+                           onupdate=lambda: get_jakarta_time())
+
+    def __repr__(self):
+        return f'<ReplyTemplate {self.title}>'
 
 class Ticket(db.Model):
     __tablename__ = 'tickets'
@@ -2208,6 +2237,85 @@ def chat():
     users = User.query.filter(User.id != current_user.id).all()
     return render_template('chat.html', user=current_user, users=users)
 
+@app.route('/collection-template', methods=['GET', 'POST'])
+@login_required
+def collection_template():
+
+    if request.method == 'POST':
+        title = request.form.get('title')
+        detail = request.form.get('detail')
+
+        if not title or not detail:
+            flash('Title dan Detail wajib diisi', 'danger')
+            return redirect(url_for('collection_template'))
+
+        template = CollectionTemplate(
+            title=title,
+            detail=detail,
+            status=1
+        )
+
+        db.session.add(template)
+        db.session.commit()
+
+        flash('Template berhasil ditambahkan', 'success')
+        return redirect(url_for('collection_template'))
+
+    templates = CollectionTemplate.query.order_by(CollectionTemplate.id.asc()).all()
+
+    return render_template(
+        'template_penagihan.html',
+        user=current_user,
+        templates=templates
+    )
+
+@app.route('/collection-template/delete', methods=['POST'])
+@login_required
+def delete_collection_template():
+    template = CollectionTemplate.query.get_or_404(request.form.get('id'))
+    db.session.delete(template)
+    db.session.commit()
+
+    flash('Template berhasil dihapus', 'success')
+    return redirect(url_for('collection_template'))
+
+@app.route('/reply-template', methods=['GET', 'POST'])
+@login_required
+def reply_template():
+
+    if request.method == 'POST':
+        title = request.form.get('title')
+        detail = request.form.get('detail')
+
+        if not title or not detail:
+            flash('Title dan Detail wajib diisi', 'danger')
+            return redirect(url_for('reply_template'))
+
+        template = ReplyTemplate(
+            title=title,
+            detail=detail,
+            status=1
+        )
+
+        db.session.add(template)
+        db.session.commit()
+
+        flash('Template berhasil ditambahkan', 'success')
+        return redirect(url_for('reply_template'))
+
+    templates = ReplyTemplate.query.order_by(ReplyTemplate.id.asc()).all()
+
+    return render_template('template_balasan.html', user=current_user, templates=templates)
+
+@app.route('/reply-template/delete', methods=['POST'])
+@login_required
+def delete_reply_template():
+    template = ReplyTemplate.query.get_or_404(request.form.get('id'))
+    db.session.delete(template)
+    db.session.commit()
+
+    flash('Template berhasil dihapus', 'success')
+    return redirect(url_for('reply_template'))
 
 # @app.route('/chat/<int:user_id>')
 # @login_required
