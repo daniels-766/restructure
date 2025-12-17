@@ -103,7 +103,7 @@ class ReplyTemplate(db.Model):
     __tablename__ = 'reply_templates'
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(200), nullable=False)
-    detail = db.Column(db.Text, nullable=False)
+    detail = db.Column(LONGTEXT, nullable=False)
     status = db.Column(db.Integer, nullable=False, default=1)
     created_at = db.Column(db.DateTime, nullable=False,
                            default=lambda: get_jakarta_time())
