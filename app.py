@@ -27,6 +27,7 @@ from openpyxl import Workbook
 from openpyxl.styles import PatternFill, Font, Alignment, Border, Side
 from openpyxl.utils import get_column_letter
 import pandas as pd
+from sqlalchemy.dialects.mysql import LONGTEXT
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:@localhost/db-restructure'
@@ -87,7 +88,7 @@ class CollectionTemplate(db.Model):
     __tablename__ = 'collection_templates'
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(200), nullable=False)
-    detail = db.Column(db.Text, nullable=False)
+    detail = db.Column(LONGTEXT, nullable=False)
     status = db.Column(db.Integer, nullable=False, default=1)
     created_at = db.Column(db.DateTime, nullable=False,
                            default=lambda: get_jakarta_time())
