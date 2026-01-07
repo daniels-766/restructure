@@ -137,6 +137,7 @@
                             </div>
 
                             <form method="post" class="text-left w-full mt-10">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                 <div class="mb-4">
                                     <label for="Username"
                                         class="block  font-medium text-default-900 text-sm mb-2">Username/ Email
