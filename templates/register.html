@@ -13,7 +13,7 @@
         {% endif %}
     {% endwith %}
 
-    <form method="POST">
+    <form method="POST"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <p>Nama: <input type="text" name="name" required></p>
         <p>Phone: <input type="text" name="phone" required></p>
         <p>Email: <input type="email" name="email" required></p>

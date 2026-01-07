@@ -779,7 +779,8 @@
                             </button>
                         </div>
 
-                        <form action="{{ url_for('update_document', document_id=doc.id) }}" method="POST">
+                        <form action="{{ url_for('update_document', document_id=doc.id) }}" method="POST"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                             <div class="card-body">
                                 <label class="block mb-2 text-sm font-medium text-default-700">Status</label>
                                 <select name="status" class="form-input w-full">
@@ -818,7 +819,7 @@
                             </button>
                         </div>
 
-                        <form action="{{ url_for('delete_document', document_id=doc.id) }}" method="POST">
+                        <form action="{{ url_for('delete_document', document_id=doc.id) }}" method="POST"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                             <div class="card-body">
                                 <p class="text-sm text-default-800">
                                     Are you sure you want to delete document
@@ -851,7 +852,8 @@
                                 <i data-lucide="x" class="size-5"></i>
                             </button>
                         </div>
-                        <form action="{{ url_for('add_document') }}" method="POST">
+                        <form action="{{ url_for('add_document') }}" method="POST"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                             <div class="card-body">
                                 <div class="mb-4">
                                     <label class="block mb-2 text-sm font-medium">Document Name</label>

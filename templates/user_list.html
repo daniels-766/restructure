@@ -997,7 +997,7 @@
                         </button>
                     </div>
 
-                    <form action="{{ url_for('add_user') }}" method="POST">
+                    <form action="{{ url_for('add_user') }}" method="POST"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                         <div class="card-body overflow-y-auto lg:h-full h-160">
                             <div class="grid grid-cols-1 gap-6 lg:grid-cols-12">
                                 <div class="lg:col-span-12 flex justify-center">

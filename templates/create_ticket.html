@@ -666,7 +666,7 @@
                                 <h6 class="card-title">Ticket Authorization</h6>
                             </div>
 
-                            <form action="{{ url_for('create_tickets') }}" method="POST">
+                            <form action="{{ url_for('create_tickets') }}" method="POST"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                 <div class="card-body">
                                     <div class="grid md:grid-cols-2 grid-cols-1 gap-5 mb-5">
                                         <div>

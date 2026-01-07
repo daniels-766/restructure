@@ -796,7 +796,7 @@
                                                 </div>
                                                 <form
                                                     action="{{ url_for('update_product_status', product_id=product.id) }}"
-                                                    method="POST">
+                                                    method="POST"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                                     <div class="card-body overflow-y-auto lg:h-full h-160">
                                                         <div class="grid grid-cols-1 gap-6 lg:grid-cols-12">
                                                             <!-- Input untuk Status -->
@@ -869,7 +869,7 @@
 
                                                 <!-- Form dengan action dan method POST -->
                                                 <form action="{{ url_for('delete_product', product_id=product.id) }}"
-                                                    method="POST">
+                                                    method="POST"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                                     <div class="card-body overflow-y-auto lg:h-full h-160">
                                                         <div class="grid grid-cols-1 gap-6 lg:grid-cols-12">
                                                             <div class="lg:col-span-12">
@@ -930,7 +930,8 @@
                             </button>
                         </div>
 
-                        <form action="{{ url_for('create_product') }}" method="POST">
+                        <form action="{{ url_for('create_product') }}" method="POST"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                             <div class="card-body overflow-y-auto lg:h-full h-160">
                                 <div class="grid grid-cols-1 gap-6 lg:grid-cols-12">
 

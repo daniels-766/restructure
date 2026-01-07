@@ -1312,7 +1312,7 @@
 
                     <div
                         class="card-footer p-4 flex flex-col sm:flex-row gap-3 justify-end border-t border-default-200">
-                        <form action="{{ url_for('close', id=ticket.id) }}" method="POST">
+                        <form action="{{ url_for('close', id=ticket.id) }}" method="POST"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                             <button type="submit"
                                 class="btn px-4 py-2 text-sm font-medium text-white bg-danger rounded-lg hover:bg-danger/90 transition-colors focus:outline-none focus:ring-2 focus:ring-danger/30">
                                 Yes, Close Case
@@ -1350,7 +1350,7 @@
                         </div>
 
                         <div class="mt-4 flex gap-2 md:justify-end">
-                            <form action="{{ url_for('move_case', id=ticket.id) }}" method="POST">
+                            <form action="{{ url_for('move_case', id=ticket.id) }}" method="POST"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                 <button
                                     class="btn border-0 text-danger bg-transparent transition-all duration-300 hover:bg-danger/10"
                                     aria-label="Close" data-hs-overlay="#ecommerce-sellers-add">Cancel</button>
@@ -1423,7 +1423,7 @@
                         </div>
                     </div>
 
-                    <form action="{{ url_for('add_note_to_ticket', ticket_id=ticket.id) }}" method="POST">
+                    <form action="{{ url_for('add_note_to_ticket', ticket_id=ticket.id) }}" method="POST"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                         <div class="card-body border-t border-default-200">
                             <div class="mb-4">
                                 <label for="notesInput"
@@ -1673,7 +1673,7 @@
                         </button>
                     </div>
 
-                    <form action="{{ url_for('save_tenor', ticket_id=ticket.id) }}" method="POST">
+                    <form action="{{ url_for('save_tenor', ticket_id=ticket.id) }}" method="POST"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                         <div class="card-body flex flex-col">
                             <h6 class="mb-3 card-title">Collection Information</h6>
 
