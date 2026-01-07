@@ -28,6 +28,8 @@ from openpyxl.styles import PatternFill, Font, Alignment, Border, Side
 from openpyxl.utils import get_column_letter
 import pandas as pd
 from sqlalchemy.dialects.mysql import LONGTEXT
+from sqlalchemy.exc import SQLAlchemyError
+from flask_wtf.csrf import CSRFProtect
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:@localhost/db-restructure'
@@ -35,6 +37,8 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = 'b35dfe6ce150230940bd145823034486'
 app.config['UPLOAD_FOLDER'] = 'static/uploads'
 app.config['MAX_CONTENT_LENGTH'] = 150 * 1024 * 1024
+
+csrf = CSRFProtect(app)
 
 UPLOAD_FOLDER = 'static/uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -1460,6 +1464,19 @@ def case_detail_collection(ticket_id):
         order_numbers_list=order_numbers_list
     )
 
+@app.route('/tenor/delete/<int:tenor_id>', methods=['POST'])
+def delete_tenor(tenor_id):
+    tenor = Tenor.query.get_or_404(tenor_id)
+
+    try:
+        db.session.delete(tenor)
+        db.session.commit()
+        flash('Tenor berhasil dihapus', 'success')
+    except SQLAlchemyError:
+        db.session.rollback()
+        flash('Gagal menghapus tenor', 'danger')
+
+    return redirect(request.referrer or url_for('case_detail_collection'))
 
 @app.route("/tenor/lunas/<int:tenor_id>/<int:no>", methods=["POST"])
 @login_required

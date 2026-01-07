@@ -859,13 +859,30 @@
                                         </div>
 
                                         {% if item.tenor_id %}
-                                        <a class="flex items-center text-sm gap-1 text-primary cursor-pointer hover:underline"
-                                            href="{{ url_for('view_kontrak', id=item.tenor_id) }}">
-                                            <i data-lucide="eye" class="size-4"></i>
-                                            View Tenor
-                                        </a>
+                                        <div class="flex items-center gap-4">
+                                            <a
+                                                href="{{ url_for('view_kontrak', id=item.tenor_id) }}"
+                                                class="flex items-center gap-1 text-sm text-primary cursor-pointer hover:underline">
+                                                <i data-lucide="eye" class="size-4"></i>
+                                                <span>View Tenor</span>
+                                            </a>
+                                            |
+                                            <form
+                                                action="{{ url_for('delete_tenor', tenor_id=item.tenor_id) }}"
+                                                method="POST"
+                                                onsubmit="return confirm('Yakin ingin menghapus tenor ini?')">
+                                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                                                <button
+                                                    type="submit"
+                                                    class="flex items-center gap-1 text-sm text-danger hover:underline bg-transparent border-0 p-0">
+                                                    <i data-lucide="trash" class="size-4"></i>
+                                                    <span>Delete Tenor</span>
+                                                </button>
+                                            </form>
+                                        </div>
                                         {% else %}
-                                        <span class="text-default-400 text-sm italic">
+                                        <span class="text-sm italic text-default-400">
                                             Tenor belum tersedia
                                         </span>
                                         {% endif %}
