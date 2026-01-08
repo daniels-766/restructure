@@ -1478,6 +1478,32 @@ def delete_tenor(tenor_id):
 
     return redirect(request.referrer or url_for('case_detail_collection'))
 
+@app.route('/ticket/<int:ticket_id>/order/delete', methods=['POST'])
+@login_required
+def delete_order_number(ticket_id):
+    order_number = request.form.get('order_number')
+
+    ticket = Ticket.query.get_or_404(ticket_id)
+
+    orders = [s.strip() for s in (ticket.order_number or '').split(',') if s.strip()]
+    nominals = [s.strip() for s in (ticket.nominal_order or '').split(',') if s.strip()]
+
+    if order_number in orders:
+        idx = orders.index(order_number)
+        orders.pop(idx)
+        if idx < len(nominals):
+            nominals.pop(idx)
+
+        ticket.order_number = ','.join(orders)
+        ticket.nominal_order = ','.join(nominals)
+        db.session.commit()
+
+        flash('Order berhasil dihapus', 'success')
+    else:
+        flash('Order tidak ditemukan', 'danger')
+
+    return redirect(url_for('ticket_detail', ticket_id=ticket_id))
+
 @app.route("/tenor/lunas/<int:tenor_id>/<int:no>", methods=["POST"])
 @login_required
 def tenor_lunas(tenor_id, no):

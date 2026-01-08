@@ -834,50 +834,74 @@
 
                         <div class="card mt-5">
                             <div class="card-body">
-                                <div class="flex justify-between gap-5 items-center">
-                                    <h6 class="mb-4 card-title"><i><u>Order Number Detail</u></i></h6>
-                                </div>
+                                <h6 class="mb-4 card-title">
+                                    <i><u>Order Number Detail</u></i>
+                                </h6>
 
-                                <div>
-                                    {% if kontrak_items and kontrak_items|length > 0 %}
+                                {% if kontrak_items %}
                                     {% for item in kontrak_items %}
-                                    <div
-                                        class="flex justify-between items-center gap-5 py-4 border-b border-dashed border-default-200">
-                                        <div class="flex items-center gap-3">
-                                            <div>
-                                                <h6 class="mb-1 card-title">
-                                                    <span
-                                                        class="transition-all duration-300 ease-linear hover:text-primary">
-                                                        {{ loop.index }}. {{ item.order_number }}
-                                                        {% if item.nominal %}
-                                                        ⇒ <b>{{ item.nominal }}</b>
-                                                        {% endif %}
-                                                    </span>
-                                                </h6>
+                                    <div class="flex justify-between items-center gap-5 py-4 border-b border-dashed border-default-200">
 
-                                            </div>
+                                        <div>
+                                            <h6 class="mb-1 card-title">
+                                                {{ loop.index }}. {{ item['order_number'] }}
+                                                {% if item['nominal'] %}
+                                                    ⇒ <b>{{ item['nominal'] }}</b>
+                                                {% endif %}
+                                            </h6>
                                         </div>
 
-                                        {% if item.tenor_id %}
-                                        <a class="flex items-center text-sm gap-1 text-primary cursor-pointer hover:underline"
-                                            href="{{ url_for('view_kontrak', id=item.tenor_id) }}">
-                                            <i data-lucide="eye" class="size-4"></i>
-                                            View Tenor
-                                        </a>
-                                        {% else %}
-                                        <span class="text-default-400 text-sm italic">
-                                            Tenor belum tersedia
-                                        </span>
-                                        {% endif %}
+                                        <div class="flex items-center gap-4">
+
+                                            {% if item['tenor_id'] %}
+                                                <a href="{{ url_for('view_kontrak', id=item['tenor_id']) }}"
+                                                class="flex items-center gap-1 text-sm text-primary hover:underline">
+                                                    <i data-lucide="eye" class="size-4"></i>
+                                                    <span>View Tenor</span>
+                                                </a>
+                                            {% else %}
+                                                <span class="text-sm italic text-default-400">
+                                                    Tenor belum tersedia
+                                                </span>
+                                            {% endif %}
+
+                                            |
+
+                                            {% if item['tenor_id'] %}
+                                                <form action="{{ url_for('delete_tenor', tenor_id=item['tenor_id']) }}"
+                                                    method="POST"
+                                                    onsubmit="return confirm('Yakin ingin menghapus tenor ini?')">
+                                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                                    <button type="submit"
+                                                        class="flex items-center gap-1 text-sm text-danger hover:underline bg-transparent border-0 p-0">
+                                                        <i data-lucide="trash" class="size-4"></i>
+                                                        <span>Delete Order</span>
+                                                    </button>
+                                                </form>
+                                            {% else %}
+                                                <form action="{{ url_for('delete_order_number', ticket_id=ticket.id) }}"
+                                                    method="POST"
+                                                    onsubmit="return confirm('Tenor belum ada. Hapus order ini?')">
+                                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                                    <input type="hidden" name="order_number" value="{{ item['order_number'] }}">
+                                                    <button type="submit"
+                                                        class="flex items-center gap-1 text-sm text-danger hover:underline bg-transparent border-0 p-0">
+                                                        <i data-lucide="trash" class="size-4"></i>
+                                                        <span>Delete Order</span>
+                                                    </button>
+                                                </form>
+                                            {% endif %}
+
+                                        </div>
                                     </div>
                                     {% endfor %}
-                                    {% else %}
-                                    <p class="text-default-500 text-sm">No order numbers available.</p>
-                                    {% endif %}
-                                </div>
+                                {% else %}
+                                    <p class="text-default-500 text-sm">
+                                        No order numbers available.
+                                    </p>
+                                {% endif %}
                             </div>
                         </div>
-
 
                         <div class="card mt-5">
                             <div class="card-body">
@@ -1049,6 +1073,7 @@
                                                             <form
                                                                 action="{{ url_for('upload_file', document_id=doc.id, ticket_id=ticket.id) }}"
                                                                 method="POST" enctype="multipart/form-data">
+                                                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                                                 <input type="file" name="files" multiple required
                                                                     class="form-input mb-4 w-full">
                                                                 <div class="flex justify-end gap-2">
@@ -1486,6 +1511,7 @@
 
                     <form action="{{ url_for('upload_docs1', ticket_id=ticket.id) }}" method="POST"
                         enctype="multipart/form-data">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                         <div class="card-body border-t border-default-200">
                             <div class="mb-4">
                                 <label for="manual_filename1"
@@ -1591,6 +1617,7 @@
                     <!-- Form hanya untuk upload file -->
                     <form action="{{ url_for('upload_docs2', ticket_id=ticket.id) }}" method="POST"
                         enctype="multipart/form-data">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                         <div class="card-body border-t border-default-200">
                             <div class="mb-4">
                                 <label for="manual_filename2"
