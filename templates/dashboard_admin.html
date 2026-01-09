@@ -1158,6 +1158,7 @@
                                 </div>
 
                                 <form action="{{ url_for('export_ticket') }}" method="POST" enctype="multipart/form-data">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                     <div class="card-body border-t border-default-200">
                                         <div class="mb-4">
                                             <label for="startDate" class="block text-sm font-medium text-default-700 mb-1">
