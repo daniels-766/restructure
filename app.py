@@ -1667,7 +1667,7 @@ def add_note_to_ticket(ticket_id):
         db.session.rollback()
         flash(f'Gagal menambahkan notes: {str(e)}', 'danger')
 
-    return redirect(url_for('ticket_detail', ticket_id=ticket_id))
+    return redirect(request.referrer or url_for('ticket_detail', ticket_id=ticket_id))
 
 
 @app.route('/upload-docs1/<int:ticket_id>', methods=['POST'])
