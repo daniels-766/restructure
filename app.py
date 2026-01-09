@@ -199,6 +199,7 @@ class Notes(db.Model):
     ticket_id = db.Column(db.Integer, db.ForeignKey(
         'tickets.id'), nullable=True)
     content = db.Column(db.Text, nullable=False)
+    type_note = db.Column(db.String(50), nullable=False)
 
     sender = db.relationship('User', backref='notes_sent')
     ticket = db.relationship('Ticket', backref='notes')
@@ -1645,6 +1646,7 @@ def add_note_to_ticket(ticket_id):
     """Tambah notes baru untuk ticket tertentu"""
     ticket = Ticket.query.get_or_404(ticket_id)
     content = request.form.get('content')
+    type_note = request.form.get('type_note')
 
     if not content:
         flash('Isi notes tidak boleh kosong.', 'danger')
@@ -1653,7 +1655,8 @@ def add_note_to_ticket(ticket_id):
     new_note = Notes(
         send_by_id=current_user.id,
         ticket_id=ticket.id,
-        content=content
+        content=content,
+        type_note=type_note
     )
 
     try:

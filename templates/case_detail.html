@@ -1417,13 +1417,18 @@
 
                                 <div class="flex justify-between items-start">
                                     <div>
-                                        <h6 class="mb-0 card-title">{{ note.sender.name }}</h6>
+                                        <h6 class="mb-0 card-title">{{ note.type_note }}</h6>
                                         <p class="text-default-500 text-sm mt-1">{{ note.content }}</p>
                                     </div>
 
-                                    <p class="text-[13px] text-default-400 whitespace-nowrap ml-4">
-                                        {{ note.created_at.strftime('%d-%b-%Y %H.%M') }}
-                                    </p>
+                                    <div>
+                                        <p class="text-[13px] text-default-400 whitespace-nowrap ml-4">
+                                            {{ note.created_at.strftime('%d-%b-%Y %H.%M') }}
+                                        </p>
+                                        <p class="text-[13px] text-default-400 whitespace-nowrap ml-4 text-end">
+                                            {{ note.sender.name }}
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
                             {% endfor %}
@@ -1450,6 +1455,15 @@
 
                     <form action="{{ url_for('add_note_to_ticket', ticket_id=ticket.id) }}" method="POST"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                         <div class="card-body border-t border-default-200">
+                            <div class="mb-4">
+                                <label for="typeInput"
+                                    class="inline-block mb-2 text-sm text-default-800 font-medium">Category Notes</label>
+                                <select class="form-input flex items-center" name="type_note" id="typeInput" required>
+                                    <option value="">Select Category</option>
+                                    <option value="Balasan CS">Balasan CS</option>
+                                    <option value="Respon Nasabah">Respon Nasabah</option>
+                                </select>
+                            </div>
                             <div class="mb-4">
                                 <label for="notesInput"
                                     class="inline-block mb-2 text-sm text-default-800 font-medium">Notes</label>
