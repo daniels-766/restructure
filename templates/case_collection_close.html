@@ -692,8 +692,8 @@
                                                     <th scope="col" class="px-3.5 py-3 text-start">Category</th>
                                                     <th scope="col" class="px-3.5 py-3 text-start">Email</th>
                                                     <th scope="col" class="px-3.5 py-3 text-start">Phone Number</th>
-                                                    <th scope="col" class="px-3.5 py-3 text-start">Tanggal Pengaduan
-                                                    </th>
+                                                    <th scope="col" class="px-3.5 py-3 text-start">Tanggal Pengaduan</th>
+                                                    <th scope="col" class="px-3.5 py-3 text-start">PIC</th>
                                                     <th scope="col" class="px-3.5 py-3 text-start">Action</th>
                                                 </tr>
                                             </thead>
@@ -719,6 +719,7 @@
                                                         ticket.phone_pengajuan }}</td>
                                                     <td class="px-3.5 py-2.5 whitespace-nowrap text-sm">{{
                                                         ticket.tanggal_pengaduan.strftime('%d-%b-%Y') }}</td>
+                                                    <td class="px-3.5 py-2.5 whitespace-nowrap text-sm">{{ ticket.pic_handle.name if ticket.pic_handle else 'User Tidak Ditemukan'}}</td>
                                                     <td class="px-3.5 py-2.5">
                                                         <div class="hs-dropdown relative inline-flex">
                                                             <button type="button"
