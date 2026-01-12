@@ -719,8 +719,9 @@
                                                         }}</td>
                                                     <td class="px-3.5 py-2.5 whitespace-nowrap text-sm">{{
                                                         ticket.phone_pengajuan }}</td>
-                                                    <td class="px-3.5 py-2.5 whitespace-nowrap text-sm">{{
-                                                        ticket.close_date.strftime('%d-%b-%Y')  }}</td>
+                                                    <td class="px-3.5 py-2.5 whitespace-nowrap text-sm">
+                                                        {{ ticket.close_date.strftime('%d-%b-%Y') if ticket.close_date else '-' }}
+                                                    </td>
                                                     <td class="px-3.5 py-2.5 whitespace-nowrap text-sm">{{ ticket.pic_handle.name if ticket.pic_handle else 'User Tidak Ditemukan'}}</td>
                                                     <td class="px-3.5 py-2.5">
                                                         <div class="hs-dropdown relative inline-flex">
