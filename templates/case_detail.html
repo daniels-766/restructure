@@ -834,71 +834,71 @@
 
                         <div class="card mt-5">
                             <div class="card-body">
-                                <h6 class="mb-4 card-title">
-                                    <i><u>Order Number Detail</u></i>
-                                </h6>
-
+                                <div class="flex justify-between gap-5 items-center">
+                                    <h6 class="mb-4 card-title"><i><u>Order Number Detail</u></i></h6>
+                                    <a href="javascript:void(0)" class="text-primary text-sm underline" data-hs-overlay="#new-tenor">+ Add New Order</a>
+                                </div>
                                 {% if kontrak_items %}
-                                    {% for item in kontrak_items %}
-                                    <div class="flex justify-between items-center gap-5 py-4 border-b border-dashed border-default-200">
+                                {% for item in kontrak_items %}
+                                <div
+                                    class="flex justify-between items-center gap-5 py-4 border-b border-dashed border-default-200">
 
-                                        <div>
-                                            <h6 class="mb-1 card-title">
-                                                {{ loop.index }}. {{ item['order_number'] }}
-                                                {% if item['nominal'] %}
-                                                    ⇒ <b>{{ item['nominal'] }}</b>
-                                                {% endif %}
-                                            </h6>
-                                        </div>
-
-                                        <div class="flex items-center gap-4">
-
-                                            {% if item['tenor_id'] %}
-                                                <a href="{{ url_for('view_kontrak', id=item['tenor_id']) }}"
-                                                class="flex items-center gap-1 text-sm text-primary hover:underline">
-                                                    <i data-lucide="eye" class="size-4"></i>
-                                                    <span>View Tenor</span>
-                                                </a>
-                                            {% else %}
-                                                <span class="text-sm italic text-default-400">
-                                                    Tenor belum tersedia
-                                                </span>
+                                    <div>
+                                        <h6 class="mb-1 card-title">
+                                            {{ loop.index }}. {{ item['order_number'] }}
+                                            {% if item['nominal'] %}
+                                            ⇒ <b>{{ item['nominal'] }}</b>
                                             {% endif %}
-
-                                            |
-
-                                            {% if item['tenor_id'] %}
-                                                <form action="{{ url_for('delete_tenor', tenor_id=item['tenor_id']) }}"
-                                                    method="POST"
-                                                    onsubmit="return confirm('Yakin ingin menghapus tenor ini?')">
-                                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                                                    <button type="submit"
-                                                        class="flex items-center gap-1 text-sm text-danger hover:underline bg-transparent border-0 p-0">
-                                                        <i data-lucide="trash" class="size-4"></i>
-                                                        <span>Delete Order</span>
-                                                    </button>
-                                                </form>
-                                            {% else %}
-                                                <form action="{{ url_for('delete_order_number', ticket_id=ticket.id) }}"
-                                                    method="POST"
-                                                    onsubmit="return confirm('Tenor belum ada. Hapus order ini?')">
-                                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                                                    <input type="hidden" name="order_number" value="{{ item['order_number'] }}">
-                                                    <button type="submit"
-                                                        class="flex items-center gap-1 text-sm text-danger hover:underline bg-transparent border-0 p-0">
-                                                        <i data-lucide="trash" class="size-4"></i>
-                                                        <span>Delete Order</span>
-                                                    </button>
-                                                </form>
-                                            {% endif %}
-
-                                        </div>
+                                        </h6>
                                     </div>
-                                    {% endfor %}
+
+                                    <div class="flex items-center gap-4">
+
+                                        {% if item['tenor_id'] %}
+                                        <a href="{{ url_for('view_kontrak', id=item['tenor_id']) }}"
+                                            class="flex items-center gap-1 text-sm text-primary hover:underline">
+                                            <i data-lucide="eye" class="size-4"></i>
+                                            <span>View Tenor</span>
+                                        </a>
+                                        {% else %}
+                                        <span class="text-sm italic text-default-400">
+                                            Tenor belum tersedia
+                                        </span>
+                                        {% endif %}
+
+                                        |
+
+                                        {% if item['tenor_id'] %}
+                                        <form action="{{ url_for('delete_tenor', tenor_id=item['tenor_id']) }}"
+                                            method="POST" onsubmit="return confirm('Yakin ingin menghapus tenor ini?')">
+                                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                            <button type="submit"
+                                                class="flex items-center gap-1 text-sm text-danger hover:underline bg-transparent border-0 p-0">
+                                                <i data-lucide="trash" class="size-4"></i>
+                                                <span>Delete Order</span>
+                                            </button>
+                                        </form>
+                                        {% else %}
+                                        <form action="{{ url_for('delete_order_number', ticket_id=ticket.id) }}"
+                                            method="POST"
+                                            onsubmit="return confirm('Tenor belum ada. Hapus order ini?')">
+                                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                            <input type="hidden" name="order_number" value="{{ item['order_number'] }}">
+                                            <button type="submit"
+                                                class="flex items-center gap-1 text-sm text-danger hover:underline bg-transparent border-0 p-0">
+                                                <i data-lucide="trash" class="size-4"></i>
+                                                <span>Delete Order</span>
+                                            </button>
+                                        </form>
+                                        {% endif %}
+
+                                    </div>
+                                </div>
+                                {% endfor %}
                                 {% else %}
-                                    <p class="text-default-500 text-sm">
-                                        No order numbers available.
-                                    </p>
+                                <p class="text-default-500 text-sm">
+                                    No order numbers available.
+                                </p>
                                 {% endif %}
                             </div>
                         </div>
@@ -1073,7 +1073,8 @@
                                                             <form
                                                                 action="{{ url_for('upload_file', document_id=doc.id, ticket_id=ticket.id) }}"
                                                                 method="POST" enctype="multipart/form-data">
-                                                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                                                <input type="hidden" name="csrf_token"
+                                                                    value="{{ csrf_token() }}">
                                                                 <input type="file" name="files" multiple required
                                                                     class="form-input mb-4 w-full">
                                                                 <div class="flex justify-end gap-2">
@@ -1337,7 +1338,8 @@
 
                     <div
                         class="card-footer p-4 flex flex-col sm:flex-row gap-3 justify-end border-t border-default-200">
-                        <form action="{{ url_for('close', id=ticket.id) }}" method="POST"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <form action="{{ url_for('close', id=ticket.id) }}" method="POST"><input type="hidden"
+                                name="csrf_token" value="{{ csrf_token() }}">
                             <button type="submit"
                                 class="btn px-4 py-2 text-sm font-medium text-white bg-danger rounded-lg hover:bg-danger/90 transition-colors focus:outline-none focus:ring-2 focus:ring-danger/30">
                                 Yes, Close Case
@@ -1375,7 +1377,8 @@
                         </div>
 
                         <div class="mt-4 flex gap-2 md:justify-end">
-                            <form action="{{ url_for('move_case', id=ticket.id) }}" method="POST"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <form action="{{ url_for('move_case', id=ticket.id) }}" method="POST"><input type="hidden"
+                                    name="csrf_token" value="{{ csrf_token() }}">
                                 <button
                                     class="btn border-0 text-danger bg-transparent transition-all duration-300 hover:bg-danger/10"
                                     aria-label="Close" data-hs-overlay="#ecommerce-sellers-add">Cancel</button>
@@ -1453,11 +1456,13 @@
                         </div>
                     </div>
 
-                    <form action="{{ url_for('add_note_to_ticket', ticket_id=ticket.id) }}" method="POST"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <form action="{{ url_for('add_note_to_ticket', ticket_id=ticket.id) }}" method="POST"><input
+                            type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                         <div class="card-body border-t border-default-200">
                             <div class="mb-4">
                                 <label for="typeInput"
-                                    class="inline-block mb-2 text-sm text-default-800 font-medium">Category Notes</label>
+                                    class="inline-block mb-2 text-sm text-default-800 font-medium">Category
+                                    Notes</label>
                                 <select class="form-input flex items-center" name="type_note" id="typeInput" required>
                                     <option value="">Select Category</option>
                                     <option value="Balasan CS">Balasan CS</option>
@@ -1714,7 +1719,8 @@
                         </button>
                     </div>
 
-                    <form action="{{ url_for('save_tenor', ticket_id=ticket.id) }}" method="POST"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <form action="{{ url_for('save_tenor', ticket_id=ticket.id) }}" method="POST"><input type="hidden"
+                            name="csrf_token" value="{{ csrf_token() }}">
                         <div class="card-body flex flex-col">
                             <h6 class="mb-3 card-title">Collection Information</h6>
 
@@ -1811,7 +1817,48 @@
             </div>
         </div>
 
-        <!-- Theme Settings Offcanvas -->
+        <div id="new-tenor"
+            class="hs-overlay hidden size-full fixed top-0 start-0 z-80 overflow-x-hidden overflow-y-auto pointer-events-none"
+            role="dialog" tabindex="-1" aria-labelledby="new-tenor-label">
+            <div
+                class="hs-overlay-animation-target hs-overlay-open:scale-100 hs-overlay-open:opacity-100 scale-95 opacity-0 ease-in-out transition-all duration-200 sm:max-w-lg sm:w-full m-3 sm:mx-auto min-h-[calc(100%-56px)] flex items-center">
+                <div
+                    class="w-full flex flex-col card border border-default-200 shadow-2xs rounded-xl pointer-events-auto">
+                    <div class="card-header">
+                        <h3 id="new-tenor-label" class="font-semibold text-base text-default-800">
+                            Add New Tenor
+                        </h3>
+
+                        <button type="button" class="size-5 text-default-800" aria-label="Close"
+                            data-hs-overlay="#new-tenor">
+                            <span class="sr-only">Close</span>
+                            <i data-lucide="x" class="size-5"></i>
+                        </button>
+                    </div>
+                    <form action="{{ url_for('add_order_number', ticket_id=ticket.id) }}" method="POST">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <div class="card-body flex flex-col">
+                            <h6 class="mb-3 card-title">New Order Number</h6>
+                            <div>
+                                <input type="number" name="order_number" class="form-input flex-grow mr-1"
+                                    placeholder="Input Order Number" required>
+                            </div>
+                        </div>
+
+                        <div class="card-body border-t border-default-200">
+                            <div class="mt-4 flex gap-2 md:justify-end">
+                                <button type="button"
+                                    class="btn border-0 text-danger bg-transparent transition-all duration-300 hover:bg-danger/10"
+                                    aria-label="Close" data-hs-overlay="#new-tenor">Cancel</button>
+
+                                <button type="submit" class="btn bg-primary text-white">Add Order Number</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
         <div>
             <div id="theme-customization"
                 class="hs-overlay hs-overlay-open:translate-x-0 hidden bg-card dark:bg-default-100 hs-overlay-open:flex flex-col translate-x-full rtl:-translate-x-full fixed inset-y-0 end-0 bottom-0 transition-all duration-300 transform max-w-sm w-full z-80 overflow-hidden">

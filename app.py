@@ -1639,6 +1639,31 @@ def ticket_detail(ticket_id):
         kontrak_items=kontrak_items
     )
 
+@app.route('/ticket/<int:ticket_id>/add_order_number', methods=['POST'])
+@login_required
+def add_order_number(ticket_id):
+    ticket = Ticket.query.get_or_404(ticket_id)
+    new_order_number = request.form.get('order_number', '').strip()
+
+    if not new_order_number:
+        flash('Order Number tidak boleh kosong', 'danger')
+        return redirect(request.referrer or url_for('ticket_detail', ticket_id=ticket_id))
+
+    existing_order_numbers = [s.strip() for s in (ticket.order_number or '').split(',') if s.strip()]
+
+    if new_order_number not in existing_order_numbers:
+        existing_order_numbers.append(new_order_number)
+        ticket.order_number = ','.join(existing_order_numbers)
+        try:
+            db.session.commit()
+            flash(f'Order Number {new_order_number} berhasil ditambahkan', 'success')
+        except:
+            db.session.rollback()
+            flash('Gagal menambahkan Order Number', 'danger')
+    else:
+        flash('Order Number sudah ada', 'warning')
+
+    return redirect(request.referrer or url_for('ticket_detail', ticket_id=ticket_id))
 
 @app.route('/add-note/<int:ticket_id>', methods=['POST'])
 @login_required
