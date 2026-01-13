@@ -30,6 +30,7 @@ import pandas as pd
 from sqlalchemy.dialects.mysql import LONGTEXT
 from sqlalchemy.exc import SQLAlchemyError
 from flask_wtf.csrf import CSRFProtect
+from openpyxl.styles import Font
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:@localhost/db-restructure'
@@ -1450,6 +1451,9 @@ def case_detail_collection(ticket_id):
             "nominal_satuan": nominal_satuan,
             "total_nominal_akhir": total_nominal_akhir,
             "total_tenor_lunas_amount": total_tenor_lunas_amount,
+
+            "total_nominal": float(t.total_nominal or 0),
+            "total_nominal_formatted": format_rupiah(t.total_nominal),
         })
 
     return render_template(
@@ -2586,6 +2590,245 @@ def export_ticket():
                      as_attachment=True,
                      mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
 
+# =========================
+# CONFIG TEMPLATE PATH
+# =========================
+
+import io
+from decimal import Decimal, InvalidOperation
+from datetime import datetime, time
+from openpyxl import load_workbook
+
+EXCEL_TEMPLATE_PATH = os.path.join(app.root_path, "static", "files", "excel.xlsx")
+
+MONTH_SHEETS_ID = [
+    "Januari", "Februari", "Maret", "April", "Mei", "Juni",
+    "Juli", "Agustus", "September", "Oktober", "November", "Desember"
+]
+
+RUPIAH_FORMAT = '"Rp"#,##0;[Red]-"Rp"#,##0'
+SELISIH_FONT = Font(color="FF0000", italic=True)
+
+def _split_csv_like(value: str) -> list[str]:
+    """Split string 'a,b,c' -> ['a','b','c'] trimming, ignore kosong."""
+    if not value:
+        return []
+    parts = [p.strip() for p in str(value).split(",")]
+    return [p for p in parts if p]
+
+
+def _parse_decimal_maybe(value: str) -> Decimal:
+    """
+    Parse angka dari string.
+    Mendukung: '500000', '37,500.00', '37.500,00' (heuristik sederhana).
+    """
+    if value is None:
+        return Decimal("0")
+
+    s = str(value).strip()
+    if not s:
+        return Decimal("0")
+
+    s = re.sub(r"[^\d,.\-]", "", s)
+
+    if "." in s and "," in s:
+        if s.rfind(",") > s.rfind("."):
+            s = s.replace(".", "").replace(",", ".")
+        else:
+            s = s.replace(",", "")
+    else:
+        if "," in s and "." not in s:
+            chunks = s.split(",")
+            if len(chunks[-1]) == 3:
+                s = s.replace(",", "")
+            else:
+                s = s.replace(",", ".")
+
+    try:
+        return Decimal(s)
+    except InvalidOperation:
+        return Decimal("0")
+
+
+def _count_order_numbers(ticket: Ticket) -> int:
+    return len(_split_csv_like(ticket.order_number or ""))
+
+
+def _sum_nominal_order(ticket: Ticket) -> Decimal:
+    vals = _split_csv_like(ticket.nominal_order or "")
+    total = Decimal("0")
+    for v in vals:
+        total += _parse_decimal_maybe(v)
+    return total
+
+
+def _clear_sheet_from_row(ws, start_row: int = 4):
+    """Kosongkan isi sheet mulai start_row sampai bawah."""
+    max_row = ws.max_row
+    max_col = ws.max_column
+    if max_row < start_row:
+        return
+    for r in range(start_row, max_row + 1):
+        for c in range(1, max_col + 1):
+            ws.cell(row=r, column=c).value = None
+
+
+def _parse_date_param(param_name: str):
+    """
+    Ambil date dari query string 'YYYY-MM-DD'.
+    Return datetime atau None.
+    """
+    v = request.args.get(param_name)
+    if not v:
+        return None
+    return datetime.strptime(v, "%Y-%m-%d")
+
+@app.route("/export/restruktur-collection", methods=["GET"])
+def export_restruktur_collection():
+    """
+    Export excel berdasarkan template excel.xlsx.
+    Query params:
+      - start_date=YYYY-MM-DD (optional)
+      - end_date=YYYY-MM-DD (optional)
+    """
+    start_dt = _parse_date_param("start_date")
+    end_dt = _parse_date_param("end_date")
+
+    q = db.session.query(Ticket).filter(Ticket.case_progress == 2)
+
+    if start_dt:
+        q = q.filter(Ticket.tanggal_pengaduan >= start_dt)
+
+    if end_dt:
+        end_of_day = datetime.combine(end_dt.date(), time.max)
+        q = q.filter(Ticket.tanggal_pengaduan <= end_of_day)
+
+    tickets = q.all()
+
+    ticket_ids = [t.id for t in tickets]
+    tenors_by_ticket = {}
+    if ticket_ids:
+        tenors = db.session.query(Tenor).filter(Tenor.ticket_id.in_(ticket_ids)).all()
+        for tr in tenors:
+            tenors_by_ticket.setdefault(tr.ticket_id, []).append(tr)
+
+    metrics = {}
+
+    for t in tickets:
+        if not t.tanggal_pengaduan:
+            continue
+
+        dt = t.tanggal_pengaduan.date()
+        month = dt.month
+        key = (month, dt)
+
+        if key not in metrics:
+            metrics[key] = {
+                "fu_total_user": 0,
+                "fu_total_data": 0,
+                "fu_total_amount": Decimal("0"),
+                "rp_total_user": 0,
+                "rp_total_data": 0,
+                "rp_total_amount": Decimal("0"),
+            }
+
+        metrics[key]["fu_total_user"] += 1
+        metrics[key]["fu_total_data"] += _count_order_numbers(t)
+        metrics[key]["fu_total_amount"] += _sum_nominal_order(t)
+
+        t_tenors = tenors_by_ticket.get(t.id, [])
+        had_repayment = False
+        repaid_tenor_count = 0
+        repaid_amount = Decimal("0")
+
+        for tr in t_tenors:
+            total_nominal = Decimal(tr.total_nominal or 0)
+            total_akhir = Decimal(tr.total_nominal_akhir or 0)
+            if total_akhir < total_nominal:
+                had_repayment = True
+                repaid_tenor_count += 1
+                repaid_amount += (total_nominal - total_akhir)
+
+        if had_repayment:
+            metrics[key]["rp_total_user"] += 1
+
+        metrics[key]["rp_total_data"] += repaid_tenor_count
+        metrics[key]["rp_total_amount"] += repaid_amount
+
+    wb = load_workbook(EXCEL_TEMPLATE_PATH)
+
+    base_ws = wb.active
+    base_title = base_ws.title
+
+    month_ws = {}
+    for i, month_name in enumerate(MONTH_SHEETS_ID, start=1):
+        if month_name in wb.sheetnames:
+            ws = wb[month_name]
+        else:
+            ws = wb.copy_worksheet(base_ws)
+            ws.title = month_name
+
+        _clear_sheet_from_row(ws, start_row=4)
+        month_ws[i] = ws
+
+    if base_title not in MONTH_SHEETS_ID and base_title in wb.sheetnames:
+        pass
+
+    for (m, dt), v in sorted(metrics.items(), key=lambda x: (x[0][0], x[0][1])):
+        ws = month_ws[m]
+
+        row = 4
+        while ws.cell(row=row, column=1).value not in (None, ""):
+            row += 1
+
+        fu_amt = v["fu_total_amount"]
+        rp_amt = v["rp_total_amount"]
+        selisih = fu_amt - rp_amt
+
+        ws.cell(row=row, column=1).value = dt.strftime("%Y-%m-%d")
+        ws.cell(row=row, column=2).value = v["fu_total_user"]
+        ws.cell(row=row, column=3).value = v["fu_total_data"]
+        cell_total_amount = ws.cell(row=row, column=4)
+        cell_total_amount.value = float(fu_amt)
+        cell_total_amount.number_format = RUPIAH_FORMAT
+
+        ws.cell(row=row, column=5).value = v["rp_total_user"]
+        ws.cell(row=row, column=6).value = v["rp_total_data"]
+        cell_repayment = ws.cell(row=row, column=7)
+        cell_repayment.value = float(rp_amt)
+        cell_repayment.number_format = RUPIAH_FORMAT
+
+        cell_selisih = ws.cell(row=row, column=8)
+        cell_selisih.value = float(selisih)
+        cell_selisih.number_format = RUPIAH_FORMAT
+        cell_selisih.font = SELISIH_FONT
+
+    if "Sheet1" in wb.sheetnames:
+        wb.remove(wb["Sheet1"])
+
+    for sheet_name in wb.sheetnames[:]:
+        if sheet_name not in MONTH_SHEETS_ID:
+            if len(wb.sheetnames) > 1:
+                wb.remove(wb[sheet_name])
+
+    output = io.BytesIO()
+    wb.save(output)
+    output.seek(0)
+
+    suffix = datetime.now().strftime("%Y%m%d_%H%M%S")
+    if start_dt or end_dt:
+        sd = start_dt.strftime("%Y%m%d") if start_dt else "ALL"
+        ed = end_dt.strftime("%Y%m%d") if end_dt else "ALL"
+        filename = f"RESTRUKTUR_COLLECTION_{sd}_{ed}.xlsx"
+    else:
+        filename = f"RESTRUKTUR_COLLECTION_{suffix}.xlsx"
+
+    return send_file(
+        output,
+        as_attachment=True,
+        download_name=filename,
+        mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    )
 
 log = logging.getLogger('werkzeug')
 log.setLevel(logging.WARNING)

@@ -851,8 +851,8 @@
                                                     <a
                                                         class="transition-all duration-300 ease-linear hover:text-primary">
                                                         {{ loop.index }}. {{ item.order_number }}
-                                                        {% if item.nominal %}
-                                                        ⇒ <b>{{ item.nominal }}</b>
+                                                        {% if item.total_nominal %}
+                                                        ⇒ <b>{{ item.total_nominal_formatted }}</b>
                                                         {% endif %}
                                                     </a>
                                                 </h6>
