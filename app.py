@@ -1334,6 +1334,7 @@ def case_collection():
 
     return render_template(
         'case_collection.html',
+        user=current_user,
         tickets=pagination.items,
         pagination=pagination,
         search_query=search_query,
