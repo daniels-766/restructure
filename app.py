@@ -1288,6 +1288,8 @@ def case_open():
     return render_template('case_open.html', user=current_user, tickets=open_tickets, pagination=pagination, search_query=search_query)
 
 
+from sqlalchemy.sql import exists
+
 @app.route('/case-collection', methods=['GET'])
 @login_required
 def case_collection():
@@ -1309,17 +1311,20 @@ def case_collection():
         )
 
     if payment_status in ['paid', 'not_paid']:
-        query = query.join(Tenor)
+        tenor_exists = db.session.query(Tenor.id).filter(
+            Tenor.ticket_id == Ticket.id
+        )
 
         if payment_status == 'paid':
-            query = query.filter(
+            tenor_exists = tenor_exists.filter(
                 Tenor.total_nominal > Tenor.total_nominal_akhir
             )
-
-        elif payment_status == 'not_paid':
-            query = query.filter(
+        else:
+            tenor_exists = tenor_exists.filter(
                 Tenor.total_nominal == Tenor.total_nominal_akhir
             )
+
+        query = query.filter(tenor_exists.exists())
 
     pagination = query.paginate(
         page=page,
@@ -1329,13 +1334,11 @@ def case_collection():
 
     return render_template(
         'case_collection.html',
-        user=current_user,
         tickets=pagination.items,
         pagination=pagination,
         search_query=search_query,
         payment_status=payment_status
     )
-
 
 @app.route('/case-collection-close', methods=['GET'])
 @login_required
