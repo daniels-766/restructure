@@ -657,25 +657,40 @@
                         <a href="#" class="text-sm font-medium text-default-700" aria-current="page">List Collection Case</a>
                     </div>
                 </div>
-                <!-- ... bagian lain dari template ... -->
                 <div class="grid grid-cols-1 gap-5 mb-5">
                     <div class="card">
                         <div class="card-header">
-                            <div class="md:flex md:space-y-5 space-y-3.5 gap-3 items-center">
+                            <div class="md:flex items-center md:space-y-0 space-y-4 gap-3">
+                                <form method="GET" action="{{ url_for('case_collection') }}"
+                                class="md:flex items-center md:space-y-0 space-y-4 gap-3">
+
+                                <input type="hidden" name="page" value="1">
+
                                 <div class="relative">
-                                    <!-- Form untuk search, submit ke route yang sama dengan query parameter -->
-                                    <form method="GET" action="{{ url_for('case_collection') }}">
-                                        <!-- Sertakan query search sebelumnya agar tidak hilang saat pindah halaman -->
-                                        <input type="hidden" name="page" value="{{ pagination.page }}">
-                                        <input type="text" name="search" class="ps-11 form-input form-input-sm w-full"
-                                            placeholder="Search by Ticket ID, Name, Category..."
-                                            value="{{ search_query }}"> <!-- Tampilkan query search sebelumnya -->
-                                        <div class="absolute inset-y-0 start-0 flex items-center ps-3">
-                                            <i data-lucide="search"
-                                                class="size-3.5 flex items-center text-default-500"></i>
-                                        </div>
-                                    </form>
+                                    <input type="text" name="search"
+                                        class="ps-11 form-input form-input-sm w-full"
+                                        placeholder="Search by Ticket ID, Name..."
+                                        value="{{ search_query }}">
+                                    <div class="absolute inset-y-0 start-0 flex items-center ps-3">
+                                        <i data-lucide="search"
+                                        class="size-3.5 flex items-center text-default-500"></i>
+                                    </div>
                                 </div>
+
+                                <select name="payment_status"
+                                        class="form-input form-input-sm"
+                                        onchange="this.form.submit()">
+                                    <option value="">select status</option>
+                                    <option value="paid"
+                                        {% if payment_status == 'paid' %}selected{% endif %}>
+                                        Paid
+                                    </option>
+                                    <option value="not_paid"
+                                        {% if payment_status == 'not_paid' %}selected{% endif %}>
+                                        Not Paid
+                                    </option>
+                                </select>
+                            </form>
                             </div>
                             <div class="flex gap-2 items-center flex-wrap mt-3 md:mt-0">
                             <a type="button"
@@ -686,7 +701,6 @@
                             </a>
                             </div>
                         </div>
-
                         <div class="flex flex-col">
                             <div class="overflow-x-auto">
                                 <div class="min-w-full inline-block align-middle">

@@ -1293,9 +1293,12 @@ def case_open():
 def case_collection():
     page = request.args.get('page', 1, type=int)
     search_query = request.args.get('search', '', type=str)
+    payment_status = request.args.get('payment_status', '', type=str)
 
-    query = Ticket.query.filter_by(
-        case_progress=2).filter(Ticket.status != '3')
+    query = Ticket.query.filter(
+        Ticket.case_progress == 2,
+        Ticket.status != '3'
+    )
 
     if search_query:
         query = query.filter(
@@ -1305,13 +1308,33 @@ def case_collection():
             )
         )
 
+    if payment_status in ['paid', 'not_paid']:
+        query = query.join(Tenor)
+
+        if payment_status == 'paid':
+            query = query.filter(
+                Tenor.total_nominal > Tenor.total_nominal_akhir
+            )
+
+        elif payment_status == 'not_paid':
+            query = query.filter(
+                Tenor.total_nominal == Tenor.total_nominal_akhir
+            )
+
     pagination = query.paginate(
-        page=page, per_page=10, error_out=False
+        page=page,
+        per_page=10,
+        error_out=False
     )
 
-    open_tickets = pagination.items
-
-    return render_template('case_collection.html', user=current_user, tickets=open_tickets, pagination=pagination, search_query=search_query)
+    return render_template(
+        'case_collection.html',
+        user=current_user,
+        tickets=pagination.items,
+        pagination=pagination,
+        search_query=search_query,
+        payment_status=payment_status
+    )
 
 
 @app.route('/case-collection-close', methods=['GET'])
