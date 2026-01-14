@@ -769,11 +769,14 @@
                                             </div>
                                         </div>
 
-                                        <!-- <span
-                                            class="flex items-center text-sm gap-1 text-primary cursor-pointer hover:underline">
+                                        <span class="flex items-center text-sm gap-1 text-primary cursor-pointer hover:underline"
+                                            data-hs-overlay="#borrowerEdit"
+                                            data-field="nama"
+                                            data-label="Customer Name"
+                                            data-value="{{ ticket.nama }}">
                                             <i data-lucide="pencil" class="size-4"></i>
                                             Edit
-                                        </span> -->
+                                        </span>
                                     </div>
 
 
@@ -788,11 +791,15 @@
                                                 </h6>
                                             </div>
                                         </div>
-                                        <!-- <span
-                                            class="flex items-center text-sm gap-1 text-primary cursor-pointer hover:underline">
+                                        <span class="flex items-center text-sm gap-1 text-primary cursor-pointer hover:underline"
+                                            data-hs-overlay="#borrowerEdit"
+                                            data-field="phone_pengajuan"
+                                            data-label="Phone Application"
+                                            data-value="{{ ticket.phone_pengajuan }}">
                                             <i data-lucide="pencil" class="size-4"></i>
                                             Edit
-                                        </span> -->
+                                        </span>
+
                                     </div>
 
                                     <div
@@ -806,11 +813,14 @@
                                                 </h6>
                                             </div>
                                         </div>
-                                        <!-- <span
-                                            class="flex items-center text-sm gap-1 text-primary cursor-pointer hover:underline">
+                                        <span class="flex items-center text-sm gap-1 text-primary cursor-pointer hover:underline"
+                                            data-hs-overlay="#borrowerEdit"
+                                            data-field="phone_aktif"
+                                            data-label="Phone Active"
+                                            data-value="{{ ticket.phone_aktif }}">
                                             <i data-lucide="pencil" class="size-4"></i>
                                             Edit
-                                        </span> -->
+                                        </span>
                                     </div>
 
                                     <div
@@ -824,16 +834,103 @@
                                                 </h6>
                                             </div>
                                         </div>
-                                        <!-- <span
-                                            class="flex items-center text-sm gap-1 text-primary cursor-pointer hover:underline">
+                                        <span class="flex items-center text-sm gap-1 text-primary cursor-pointer hover:underline"
+                                            data-hs-overlay="#borrowerEdit"
+                                            data-field="email"
+                                            data-label="Email"
+                                            data-value="{{ ticket.email }}">
                                             <i data-lucide="pencil" class="size-4"></i>
                                             Edit
-                                        </span> -->
+                                        </span>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
+                        <div id="borrowerEdit"
+                            class="hs-overlay hidden size-full fixed top-0 start-0 z-80 overflow-x-hidden overflow-y-auto pointer-events-none"
+                            role="dialog"
+                            tabindex="-1"
+                            aria-labelledby="borrowerEditlabel">
+
+                            <div
+                                class="hs-overlay-animation-target hs-overlay-open:scale-100 hs-overlay-open:opacity-100
+                                    scale-95 opacity-0 ease-in-out transition-all duration-200
+                                    max-w-md lg:w-full m-3 mx-auto min-h-[calc(100%-56px)] flex items-center">
+
+                                <div
+                                    class="w-full flex flex-col card border border-default-200 shadow-2xs rounded-xl pointer-events-auto">
+
+                                    <!-- HEADER -->
+                                    <div class="card-header flex justify-between items-center">
+                                        <h3 id="borrowerEditlabel"
+                                            class="font-semibold text-base text-default-800">
+                                            Edit Customer Data
+                                        </h3>
+
+                                        <button type="button" aria-label="Close" data-hs-overlay="#borrowerEdit">
+                                            <span class="sr-only">Close</span>
+                                            <i data-lucide="x" class="size-5"></i>
+                                        </button>
+                                    </div>
+
+                                    <!-- FORM -->
+                                    <form method="POST"
+                                        action="{{ url_for('update_ticket_field', ticket_id=ticket.id) }}">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                                        <!-- hidden field name -->
+                                        <input type="hidden" name="field" id="editField">
+
+                                        <div class="card-body overflow-y-auto lg:h-full h-160">
+                                            <div class="grid grid-cols-1 gap-6">
+
+                                                <div>
+                                                    <!-- LABEL DINAMIS -->
+                                                    <label id="editLabel"
+                                                        class="block mb-2 text-sm font-medium text-default-700">
+                                                        Field
+                                                    </label>
+
+                                                    <!-- VALUE DINAMIS -->
+                                                    <input type="text"
+                                                        name="value"
+                                                        id="editValue"
+                                                        class="form-input"
+                                                        required>
+                                                </div>
+
+                                            </div>
+                                        </div>
+
+                                        <!-- FOOTER -->
+                                        <div class="card-footer flex justify-end gap-2">
+                                            <button type="button"
+                                                    class="btn bg-transparent border-0 text-danger hover:bg-danger/10"
+                                                    data-hs-overlay="#borrowerEdit">
+                                                Cancel
+                                            </button>
+
+                                            <button type="submit"
+                                                    class="btn bg-primary text-white">
+                                                Update
+                                            </button>
+                                        </div>
+
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <script>
+                        document.querySelectorAll('[data-hs-overlay="#borrowerEdit"]').forEach(el => {
+                            el.addEventListener('click', function () {
+                                document.getElementById('editField').value = this.dataset.field;
+                                document.getElementById('editLabel').innerText = this.dataset.label;
+                                document.getElementById('editValue').value = this.dataset.value;
+                            });
+                        });
+                        </script>
                         <div class="card mt-5">
                             <div class="card-body">
                                 <div class="flex justify-between gap-5 items-center">

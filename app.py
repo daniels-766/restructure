@@ -1496,6 +1496,35 @@ def case_detail_collection(ticket_id):
         order_numbers_list=order_numbers_list
     )
 
+from flask import Flask, abort
+
+@app.route('/case-detail-collection/<int:ticket_id>/update', methods=['POST'])
+@login_required
+def update_ticket_field(ticket_id):
+    ticket = Ticket.query.get_or_404(ticket_id)
+
+    field = request.form.get('field')
+    value = request.form.get('value')
+
+    allowed_fields = {
+        'nama',
+        'phone_pengajuan',
+        'phone_aktif',
+        'email'
+    }
+
+    if field not in allowed_fields:
+        abort(400)
+
+    setattr(ticket, field, value)
+    db.session.commit()
+
+    flash('Data berhasil diperbarui', 'success')
+    return redirect(request.referrer or url_for(
+        'case_detail_collection',
+        ticket_id=ticket.id
+    ))
+
 @app.route('/tenor/delete/<int:tenor_id>', methods=['POST'])
 def delete_tenor(tenor_id):
     tenor = Tenor.query.get_or_404(tenor_id)
