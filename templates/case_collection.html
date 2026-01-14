@@ -771,8 +771,7 @@
                                 </div>
                             </div>
 
-                            <!-- Footer Pagination -->
-                            {% if pagination.pages > 0 %} <!-- Hanya tampilkan footer jika lebih dari 1 halaman -->
+                            {% if pagination.pages > 0 %} 
                             <div class="card-footer flex flex-col sm:flex-row items-center justify-between gap-4 mb-5">
                                 <p class="text-default-500 text-sm">
                                     Showing <b>{{ pagination.per_page * (pagination.page - 1) + 1 }}</b> to
@@ -782,9 +781,8 @@
                                 </p>
 
                                 <nav class="flex items-center gap-2" aria-label="Pagination">
-                                    <!-- Tombol Previous -->
                                     {% if pagination.has_prev %}
-                                    <a href="{{ url_for('case_collection', page=pagination.prev_num, search=search_query) }}"
+                                    <a href="{{ url_for('case_collection', page=pagination.prev_num, search=search_query, payment_status=payment_status) }}"
                                         class="btn btn-sm border bg-transparent border-default-200 text-default-600 hover:bg-primary/10 hover:text-primary hover:border-primary/10">
                                         <i data-lucide="chevron-left" class="size-4 me-1"></i> Prev
                                     </a>
@@ -795,26 +793,28 @@
                                     </span>
                                     {% endif %}
 
-                                    <!-- Link Halaman -->
                                     {% for page_num in pagination.iter_pages() %}
-                                    {% if page_num %}
-                                    {% if page_num != pagination.page %}
-                                    <a href="{{ url_for('case_collection', page=page_num, search=search_query) }}"
-                                        class="btn size-7.5 bg-transparent border border-default-200 text-default-600 hover:bg-primary/10 hover:text-primary hover:border-primary/10">
-                                        {{ page_num }}
-                                    </a>
-                                    {% else %}
-                                    <span class="btn size-7.5 bg-primary text-white">{{ page_num }}</span>
-                                    {% endif %}
-                                    {% else %}
-                                    <span
-                                        class="btn size-7.5 bg-transparent border border-transparent text-default-500">…</span>
-                                    {% endif %}
+                                        {% if page_num %}
+                                            {% if page_num != pagination.page %}
+                                            <a href="{{ url_for(
+                                                'case_collection',
+                                                page=page_num,
+                                                search=search_query,
+                                                payment_status=payment_status
+                                            ) }}"
+                                            class="btn size-7.5 bg-transparent border border-default-200 text-default-600 hover:bg-primary/10 hover:text-primary hover:border-primary/10">
+                                                {{ page_num }}
+                                            </a>
+                                            {% else %}
+                                            <span class="btn size-7.5 bg-primary text-white">{{ page_num }}</span>
+                                            {% endif %}
+                                        {% else %}
+                                            <span class="btn size-7.5 bg-transparent border border-transparent text-default-500">…</span>
+                                        {% endif %}
                                     {% endfor %}
 
-                                    <!-- Tombol Next -->
                                     {% if pagination.has_next %}
-                                    <a href="{{ url_for('case_collection', page=pagination.next_num, search=search_query) }}"
+                                    <a href="{{ url_for('case_collection', page=pagination.next_num, search=search_query, payment_status=payment_status) }}"
                                         class="btn btn-sm border bg-transparent border-default-200 text-default-600 hover:bg-primary/10 hover:text-primary hover:border-primary/10">
                                         Next <i data-lucide="chevron-right" class="size-4 ms-1"></i>
                                     </a>
@@ -848,7 +848,6 @@
         </button>
       </div>
 
-      <!-- IMPORTANT: action ke route export -->
       <form action="/export/restruktur-collection" method="GET">
         <div class="card-body border-t border-default-200">
           <div class="mb-4">
